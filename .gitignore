@@ -2,7 +2,8 @@
 /node_modules
 /.pnp
 .pnp.js
-
+public/footer/
+public/pdfs/
 logs/
 logs
 
