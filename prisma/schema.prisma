@@ -1,0 +1,139 @@
+// This is your Prisma schema file
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid()) @map("_id")
+  email     String   @unique
+  password  String?  // Optional for OAuth users
+  name      String
+  role      String   // 'STUDENT' | 'TUTOR'
+  provider  String   @default("email") // 'email' | 'google' | 'facebook'
+  googleId  String?  // Google OAuth ID (not unique to allow null values)
+  picture   String?  // Profile picture URL
+  emailVerified Boolean @default(false)
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Profile relations
+  studentProfile StudentProfile?
+  tutorProfile   TutorProfile?
+
+  // Common fields
+  sentMessages     Message[]  @relation("SentMessages")
+  receivedMessages Message[]  @relation("ReceivedMessages")
+  notifications    Notification[]
+}
+
+model StudentProfile {
+  id          String   @id @default(cuid()) @map("_id")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  grade       String
+  subjects    String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  conversations Conversation[]
+  bookings     Booking[]
+
+  @@unique([userId])
+}
+
+model TutorProfile {
+  id           String   @id @default(cuid()) @map("_id")
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  bio          String
+  subjects     String[]
+  hourlyRate   Float
+  availability Json
+  qualifications String
+  mode           String
+  location       String
+  experience     String
+  contact        String
+  languages      String[]
+  profilePicture String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  conversations Conversation[]
+  bookings     Booking[]
+
+  @@unique([userId])
+}
+
+model Conversation {
+  id        String   @id @default(cuid()) @map("_id")
+  student   StudentProfile @relation(fields: [studentId], references: [id])
+  studentId String
+  tutor     TutorProfile   @relation(fields: [tutorId], references: [id])
+  tutorId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  messages Message[]
+
+  @@index([studentId])
+  @@index([tutorId])
+}
+
+model Message {
+  id             String       @id @default(cuid()) @map("_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id])
+  senderId       String
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId     String
+  content        String
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+model Booking {
+  id          String   @id @default(cuid()) @map("_id")
+  student     StudentProfile @relation(fields: [studentId], references: [id])
+  studentId   String
+  tutor       TutorProfile   @relation(fields: [tutorId], references: [id])
+  tutorId     String
+  startTime   DateTime
+  endTime     DateTime
+  subject     String
+  status      String   // 'pending' | 'confirmed' | 'cancelled' | 'completed'
+  paymentId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([studentId])
+  @@index([tutorId])
+}
+
+model Notification {
+  id        String   @id @default(cuid()) @map("_id")
+  type      String   // 'message' | 'booking' | 'payment' | 'system'
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+} 
