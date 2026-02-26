@@ -1,7 +1,21 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Block crypto-miner / scanner probes (security + Hostinger-friendly)
+function isMinerOrScannerProbe(req: NextRequest): boolean {
+  const path = req.nextUrl.pathname.toLowerCase();
+  const ua = (req.headers.get('user-agent') || '').toLowerCase();
+  const minerPaths = ['/stratum', '/.well-known/stratum', '/miner', '/mine', '/xmr', '/monero', '/coinhive', '/cryptonight', '/minero', '/jsecoin', '/crypto-loot', '/webmine', '/2miners', '/nanopool', '/xmrig', '/worker.min.js', '/miner.js', '/lib/cryptonight'];
+  const minerUas = ['xmrig', 'ccminer', 'cgminer', 'bfgminer', 'cpuminer', 'minerd', 'nicehash', 'multipool', 'stratum'];
+  if (minerPaths.some((p) => path.includes(p))) return true;
+  if (minerUas.some((m) => ua.includes(m))) return true;
+  return false;
+}
+
 export async function middleware(request: NextRequest) {
+  if (isMinerOrScannerProbe(request)) {
+    return new NextResponse(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+  }
   // Handle Socket.IO upgrade requests
   if (request.headers.get('upgrade') === 'websocket') {
     // For now, allow all WebSocket connections
@@ -46,10 +60,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/api/:path*',
-    '/dashboard/:path*',
-    '/messages/:path*',
-    '/bookings/:path*',
-    '/settings/:path*',
+    // Run for API, dashboard, and all non-static routes (so miner probe block runs)
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(ico|png|jpg|jpeg|gif|webp|svg|css|js)$).*)',
   ],
 }; 
