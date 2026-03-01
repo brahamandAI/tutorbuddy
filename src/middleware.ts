@@ -60,7 +60,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run for API, dashboard, and all non-static routes (so miner probe block runs)
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(ico|png|jpg|jpeg|gif|webp|svg|css|js)$).*)',
+    // Run on all pathnames; static assets still get next() quickly
+    '/:path*',
   ],
 }; 
