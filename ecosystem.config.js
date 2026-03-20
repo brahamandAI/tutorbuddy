@@ -6,8 +6,9 @@ module.exports = {
       // ---- WORKING DIRECTORY ----
       cwd: '/home/ubuntu/htdocs/tutorbuddy',
       
-      // ---- START USING PNPM (IMPORTANT) ----
-      script: '/home/ubuntu/.local/share/pnpm/pnpm',
+      // ---- START USING NPM (IMPORTANT) ----
+      // pm2 needs an absolute binary path for npm when using nvm-managed Node.
+      script: '/home/ubuntu/.nvm/versions/node/v20.9.0/bin/npm',
       args: 'start',
       interpreter: 'sh',
       
