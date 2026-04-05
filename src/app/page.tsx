@@ -154,13 +154,22 @@ export default function Home() {
     { name: "Janakpuri", students: 95, tutors: 16, rating: 4.7 }
   ]
 
+  const courseCategoryIconClass = [
+    'bg-category-1 text-category-1-fg',
+    'bg-category-2 text-category-2-fg',
+    'bg-category-3 text-category-3-fg',
+    'bg-category-4 text-category-4-fg',
+    'bg-category-5 text-category-5-fg',
+    'bg-category-6 text-category-6-fg',
+  ] as const
+
   const courseCategories = [
-    { name: "Kindergarten", icon: <School className="h-6 w-6" />, color: "bg-pink-500", courses: 12 },
-    { name: "Primary (1-5)", icon: <BookOpen className="h-6 w-6" />, color: "bg-blue-500", courses: 25 },
-    { name: "Middle (6-8)", icon: <GraduationCap className="h-6 w-6" />, color: "bg-green-500", courses: 30 },
-    { name: "Secondary (9-10)", icon: <Target className="h-6 w-6" />, color: "bg-purple-500", courses: 35 },
-    { name: "Senior Secondary", icon: <Trophy className="h-6 w-6" />, color: "bg-orange-500", courses: 40 },
-    { name: "Competitive Exams", icon: <Award className="h-6 w-6" />, color: "bg-red-500", courses: 20 }
+    { name: "Kindergarten", icon: <School className="h-6 w-6" />, courses: 12 },
+    { name: "Primary (1-5)", icon: <BookOpen className="h-6 w-6" />, courses: 25 },
+    { name: "Middle (6-8)", icon: <GraduationCap className="h-6 w-6" />, courses: 30 },
+    { name: "Secondary (9-10)", icon: <Target className="h-6 w-6" />, courses: 35 },
+    { name: "Senior Secondary", icon: <Trophy className="h-6 w-6" />, courses: 40 },
+    { name: "Competitive Exams", icon: <Award className="h-6 w-6" />, courses: 20 }
   ]
 
   const features = [
@@ -227,8 +236,8 @@ export default function Home() {
       <div className="min-h-screen bg-background">
         
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-          <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
+        <section className="relative overflow-hidden bg-gradient-to-br from-primary/[0.07] via-background to-brand-primary-end/[0.06]">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.35)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.35)_1px,transparent_1px)] bg-[size:48px_48px]" />
           <div className="relative px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
             <div className="mx-auto max-w-7xl">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -244,7 +253,7 @@ export default function Home() {
                   <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-5xl xl:text-6xl">
                     Smart Teaching. Smarter Students
                     <br />
-                    <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Fueling Futures with AI</span>
+                    <span className="gradient-text">Fueling Futures with AI</span>
                   </h1>
                   
                   <p className="mt-6 text-lg leading-8 text-muted-foreground lg:max-w-lg">
@@ -252,16 +261,20 @@ export default function Home() {
                     across Delhi. Expert tutors, smart recommendations, and voice support in Indian languages.
                   </p>
                   
-                  <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                    <Button size="lg" className="px-8 py-3 text-lg" onClick={() => openPopup('register', 'STUDENT')}>
+                  <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 flex-wrap">
+                    <Button
+                      size="lg"
+                      className="px-8 py-3 text-lg shadow-md bg-gradient-to-r from-primary to-brand-primary-end hover:opacity-95"
+                      onClick={() => openPopup('register', 'STUDENT')}
+                    >
                       <UserCheck className="mr-2 h-5 w-5" />
                       Register as Student
                     </Button>
-                    <Button variant="outline" size="lg" className="px-8 py-3 text-lg" onClick={() => openPopup('register', 'TUTOR')}>
+                    <Button variant="secondary" size="lg" className="px-8 py-3 text-lg" onClick={() => openPopup('register', 'TUTOR')}>
                       <GraduationCap className="mr-2 h-5 w-5" />
                       Register as Tutor
                     </Button>
-                    <Button variant="outline" size="lg" className="px-8 py-3 text-lg" asChild>
+                    <Button variant="outline" size="lg" className="px-8 py-3 text-lg border-border/80" asChild>
                       <Link href="/courses">
                         <BookOpen className="mr-2 h-5 w-5" />
                         Explore Courses
@@ -306,7 +319,7 @@ export default function Home() {
         <BrainstormBubbles />
 
         {/* Features Section */}
-        <section className="py-24 px-6 sm:px-6 lg:px-8">
+        <section className="py-24 px-6 sm:px-6 lg:px-8 bg-muted/25 border-y border-border/60">
           <div className="mx-auto max-w-7xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -352,10 +365,12 @@ export default function Home() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {courseCategories.map((category, index) => (
                 <Link key={index} href="/courses" className="block">
-                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 bg-gradient-to-br from-card to-card/50">
+                  <Card className="group border border-border/60 bg-card shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
                     <CardContent className="p-6">
                       <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 ${category.color} rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300`}>
+                        <div
+                          className={`w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300 ${courseCategoryIconClass[index]}`}
+                        >
                           {category.icon}
                         </div>
                         <div className="flex-1">
@@ -373,7 +388,7 @@ export default function Home() {
         </section>
 
         {/* Delhi Offline Locations Section */}
-        <section className="py-24 px-6 sm:px-6 lg:px-8">
+        <section className="py-24 px-6 sm:px-6 lg:px-8 bg-muted/20">
           <div className="mx-auto max-w-7xl">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -396,7 +411,7 @@ export default function Home() {
                         <div>
                           <h3 className="font-semibold text-lg">{location.name}</h3>
                           <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <Star className="h-4 w-4 fill-warning text-warning" />
                             <span>{location.rating}</span>
                           </div>
                         </div>
@@ -442,19 +457,19 @@ export default function Home() {
                 
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-success" />
                     <span>Instant doubt resolution</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-success" />
                     <span>Personalized course recommendations</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-success" />
                     <span>Voice support in Indian languages</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-success" />
                     <span>24/7 learning assistance</span>
                 </div>
                 </div>
@@ -468,10 +483,10 @@ export default function Home() {
               </div>
               
               <div className="relative">
-                <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl p-8 border-0 shadow-lg">
+                <div className="rounded-3xl border border-border/60 bg-gradient-to-br from-primary/[0.08] to-brand-primary-end/[0.06] p-8 shadow-md">
                   <div className="flex items-center space-x-3 mb-6">
                     <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                      <Bot className="h-5 w-5 text-white" />
+                      <Bot className="h-5 w-5 text-primary-foreground" />
                     </div>
                     <div>
                       <h3 className="font-semibold">ब्रह्मांड Ai</h3>
@@ -523,7 +538,7 @@ export default function Home() {
                   <CardContent className="p-8">
                     <div className="flex items-center space-x-1 mb-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <Star key={i} className="h-4 w-4 fill-warning text-warning" />
                       ))}
                     </div>
                     <p className="text-muted-foreground mb-6 italic">
@@ -557,7 +572,7 @@ export default function Home() {
         {/* CTA Section */}
         <section className="py-24 px-6 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
-            <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl p-12">
+            <div className="rounded-3xl border border-border/60 bg-gradient-to-r from-primary/[0.08] via-muted/40 to-brand-primary-end/[0.08] p-10 sm:p-12">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-6">
                 Ready to Start Your Learning Journey?
               </h2>
@@ -565,12 +580,12 @@ export default function Home() {
                 Join thousands of students who are already learning smart with AI. 
                 Choose your preferred mode - online or offline sessions in Delhi.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="px-8 py-3 text-lg" onClick={() => openPopup('register', 'STUDENT')}>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button size="lg" className="px-8 py-3 text-lg shadow-md bg-gradient-to-r from-primary to-brand-primary-end hover:opacity-95" onClick={() => openPopup('register', 'STUDENT')}>
                   <UserCheck className="mr-2 h-5 w-5" />
                   Register as Student
                 </Button>
-                <Button variant="outline" size="lg" className="px-8 py-3 text-lg" onClick={() => openPopup('register', 'TUTOR')}>
+                <Button variant="secondary" size="lg" className="px-8 py-3 text-lg" onClick={() => openPopup('register', 'TUTOR')}>
                   <GraduationCap className="mr-2 h-5 w-5" />
                   Become a Tutor
                 </Button>

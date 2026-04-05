@@ -115,11 +115,11 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
   return (
     <div className="flex min-h-screen bg-background">
       {/* Collapsible Sidebar - Always render but conditionally show */}
-      <div className={`bg-card border-r border-border shadow-lg transition-all duration-300 ease-in-out ${
+      <div className={`flex flex-col bg-card border-r border-border shadow-sm transition-all duration-300 ease-in-out ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}>
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-border">
+        <div className="p-4 border-b border-border bg-muted/40">
           <div className="flex items-center justify-between">
             {!isCollapsed && (
               <div className="flex items-center space-x-3">
@@ -148,7 +148,7 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
             {/* Toggle Button */}
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
+              className="p-2 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card"
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               <svg 
@@ -164,7 +164,7 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
         </div>
 
         {/* Navigation Links */}
-        <nav className="p-4 space-y-2 flex-1">
+        <nav className="p-3 space-y-1 flex-1 overflow-y-auto">
           {navigationItems.map((item) => {
             // Handle navigation for unauthenticated users
             const handleClick = (e: React.MouseEvent) => {
@@ -179,10 +179,10 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
                 key={item.name}
                 href={item.href}
                 onClick={handleClick}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center space-x-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card ${
                   pathname === item.href
-                    ? 'bg-accent text-accent-foreground border-r-2 border-primary'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    ? 'bg-primary/10 text-primary shadow-sm'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
                 title={isCollapsed ? item.name : undefined}
               >
@@ -196,7 +196,7 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
           <div className="pt-4">
             <button
               onClick={() => setShowTools(!showTools)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card"
               title={isCollapsed ? 'Tools' : undefined}
             >
               <div className="flex items-center space-x-3">
@@ -231,10 +231,10 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
                       key={tool.name}
                       href={tool.href}
                       onClick={handleToolClick}
-                      className={`flex items-center space-x-3 px-4 py-2 rounded-lg text-sm transition-colors ${
+                      className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card ${
                         pathname === tool.href
-                          ? 'bg-accent text-accent-foreground border-r-2 border-primary'
-                          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                          ? 'bg-primary/10 text-primary font-medium'
+                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                     >
                       {tool.icon}
@@ -261,10 +261,10 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
                       key={tool.name}
                       href={tool.href}
                       onClick={handleToolClick}
-                      className={`flex items-center justify-center p-3 rounded-lg text-sm transition-colors ${
+                      className={`flex items-center justify-center p-3 rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card ${
                         pathname === tool.href
-                          ? 'bg-accent text-accent-foreground'
-                          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                       title={tool.name}
                     >
@@ -278,11 +278,11 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-border space-y-3">
+        <div className="p-3 border-t border-border bg-muted/20 space-y-1">
           {/* Contact */}
           <Link
             href="/contact"
-            className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
+            className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card"
             title={isCollapsed ? 'Contact' : undefined}
           >
             <Mail className="h-4 w-4" />
@@ -292,7 +292,7 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
           {/* Toggle Theme */}
           <button 
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
+            className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card"
             title={isCollapsed ? 'Toggle theme' : undefined}
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -303,7 +303,7 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
           {isAuthenticated && user && (
             <button
               onClick={() => setShowLogoutConfirm(true)}
-              className="w-full flex items-center space-x-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
+              className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-card"
               title={isCollapsed ? 'Logout' : undefined}
             >
               <LogOut className="h-4 w-4" />

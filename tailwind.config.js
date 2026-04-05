@@ -50,6 +50,38 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          primary: "hsl(var(--primary))",
+          "primary-end": "hsl(var(--brand-gradient-end))",
+          surface: "hsl(var(--muted))",
+          success: "hsl(var(--success))",
+          warning: "hsl(var(--warning))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        category: {
+          1: "hsl(var(--category-1) / <alpha-value>)",
+          "1-fg": "hsl(var(--category-1-fg) / <alpha-value>)",
+          2: "hsl(var(--category-2) / <alpha-value>)",
+          "2-fg": "hsl(var(--category-2-fg) / <alpha-value>)",
+          3: "hsl(var(--category-3) / <alpha-value>)",
+          "3-fg": "hsl(var(--category-3-fg) / <alpha-value>)",
+          4: "hsl(var(--category-4) / <alpha-value>)",
+          "4-fg": "hsl(var(--category-4-fg) / <alpha-value>)",
+          5: "hsl(var(--category-5) / <alpha-value>)",
+          "5-fg": "hsl(var(--category-5-fg) / <alpha-value>)",
+          6: "hsl(var(--category-6) / <alpha-value>)",
+          "6-fg": "hsl(var(--category-6-fg) / <alpha-value>)",
+        },
+      },
+      boxShadow: {
+        "dashboard-card": "0 8px 24px rgba(0,0,0,0.05)",
       },
       borderRadius: {
         lg: "var(--radius)",

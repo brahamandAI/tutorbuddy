@@ -67,13 +67,13 @@ export default function Navbar() {
 
 
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed top-0 left-0 right-0 z-50">
+    <nav className="border-b border-border/80 bg-card/80 backdrop-blur-md supports-[backdrop-filter]:bg-card/70 fixed top-0 left-0 right-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
             {/* Sidebar Toggle Button - Edge of Screen */}
             <button
               onClick={toggleSidebar}
-              className="fixed top-4 left-4 z-50 p-3 bg-background/90 backdrop-blur-sm rounded-xl shadow-lg hover:bg-background hover:shadow-xl transition-all duration-200 border border-border"
+              className="fixed top-4 left-4 z-50 p-3 rounded-xl border border-border bg-card/95 shadow-md backdrop-blur-sm transition-all duration-200 hover:bg-card hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
               title="Toggle sidebar"
             >
               <div className="flex flex-col space-y-1">
@@ -93,67 +93,67 @@ export default function Navbar() {
                 height={64}
                 className="h-16 w-auto rounded-lg"
               />
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              <span className="font-bold text-xl bg-gradient-to-r from-primary to-brand-primary-end bg-clip-text text-transparent">
                 TutorBuddy
               </span>
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-6">
-            {/* Main Navigation */}
-            <div className="flex items-center space-x-6">
-              {mainNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              ))}
-            </div>
+          {/* Desktop Navigation — hidden on student/tutor app routes (sidebar is primary) */}
+          {!isOnAuthenticatedPage && (
+            <div className="hidden lg:flex items-center space-x-6">
+              <div className="flex items-center space-x-6">
+                {mainNavigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {item.icon}
+                    <span>{item.name}</span>
+                  </Link>
+                ))}
+              </div>
 
-            {/* Tools Dropdown */}
-            <div className="relative group">
-              <button className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                <Target className="h-4 w-4" />
-                <span>Tools</span>
-                <svg className="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className="absolute top-full left-0 mt-2 w-64 bg-background border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="py-2 max-h-96 overflow-y-auto">
-                  {toolsNavigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="flex items-center space-x-3 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                    >
-                      {item.icon}
-                      <span>{item.name}</span>
-                    </Link>
-                  ))}
+              <div className="relative group">
+                <button className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  <Target className="h-4 w-4" />
+                  <span>Tools</span>
+                  <svg className="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className="absolute top-full left-0 mt-2 w-64 rounded-lg border border-border bg-popover text-popover-foreground shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-2 max-h-96 overflow-y-auto">
+                    {toolsNavigation.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="flex items-center space-x-3 px-4 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                      >
+                        {item.icon}
+                        <span>{item.name}</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Other Navigation */}
-            <div className="flex items-center space-x-6">
-              {otherNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              ))}
+              <div className="flex items-center space-x-6">
+                {otherNavigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {item.icon}
+                    <span>{item.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+          {isOnAuthenticatedPage && <div className="hidden lg:block flex-1" aria-hidden />}
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
@@ -171,7 +171,7 @@ export default function Navbar() {
               <Button 
                 size="sm" 
                 onClick={() => openPopup('login')}
-                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                className="bg-gradient-to-r from-primary to-brand-primary-end hover:opacity-95 shadow-sm"
               >
                 <GraduationCap className="mr-2 h-4 w-4" />
                 Sign In
@@ -182,20 +182,24 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+          {/* Mobile: app routes use sidebar + account menu; marketing sites keep full menu */}
+          <div className="lg:hidden flex items-center">
+            {isAuthenticated && user && isOnAuthenticatedPage ? (
+              <UserNav user={user} />
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
+        {isMenuOpen && !isOnAuthenticatedPage && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 border-t">
               {/* Main Navigation */}

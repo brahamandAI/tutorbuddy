@@ -25,8 +25,8 @@ interface Category {
   id: string
   name: string
   icon: React.ReactNode
-  color: string
   gradient: string
+  iconForegroundClass: string
   pdfs: PDFResource[]
 }
 
@@ -35,8 +35,8 @@ const categories: Category[] = [
     id: 'economy',
     name: 'Economy',
     icon: <DollarSign className="h-8 w-8" />,
-    color: 'text-green-600',
-    gradient: 'from-green-500 to-emerald-600',
+    gradient: 'from-success to-success/85',
+    iconForegroundClass: 'text-success-foreground',
     pdfs: [
       { name: 'economy part1.pdf', path: '/footer/pdfs/economy/economy part1.pdf', displayName: 'Economy Part 1' },
       { name: 'economy part2.pdf', path: '/footer/pdfs/economy/economy part2.pdf', displayName: 'Economy Part 2' },
@@ -47,8 +47,8 @@ const categories: Category[] = [
     id: 'geo',
     name: 'Geography',
     icon: <Globe className="h-8 w-8" />,
-    color: 'text-blue-600',
-    gradient: 'from-blue-500 to-cyan-600',
+    gradient: 'from-primary to-brand-primary-end',
+    iconForegroundClass: 'text-primary-foreground',
     pdfs: [
       { name: 'PART-3-indian-geography.pdf', path: '/footer/pdfs/geo/PART-3-indian-geography.pdf', displayName: 'Indian Geography Part 3' },
       { name: 'part1-Indian-geography .pdf', path: '/footer/pdfs/geo/part1-Indian-geography .pdf', displayName: 'Indian Geography Part 1' },
@@ -60,8 +60,8 @@ const categories: Category[] = [
     id: 'history',
     name: 'History',
     icon: <BookOpen className="h-8 w-8" />,
-    color: 'text-purple-600',
-    gradient: 'from-purple-500 to-pink-600',
+    gradient: 'from-brand-primary-end to-primary',
+    iconForegroundClass: 'text-primary-foreground',
     pdfs: [
       { name: 'PART-1-modern-Indian-history.pdf', path: '/footer/pdfs/history/PART-1-modern-Indian-history.pdf', displayName: 'Modern Indian History Part 1' },
       { name: 'part-2-modern-indian-history.pdf', path: '/footer/pdfs/history/part-2-modern-indian-history.pdf', displayName: 'Modern Indian History Part 2' },
@@ -72,8 +72,8 @@ const categories: Category[] = [
     id: 'maps',
     name: 'Maps',
     icon: <MapPin className="h-8 w-8" />,
-    color: 'text-orange-600',
-    gradient: 'from-orange-500 to-red-600',
+    gradient: 'from-warning to-warning/80',
+    iconForegroundClass: 'text-warning-foreground',
     pdfs: [
       { name: 'Africa.pdf', path: '/footer/pdfs/maps/Africa.pdf', displayName: 'Africa Map' },
       { name: 'Asia.pdf', path: '/footer/pdfs/maps/Asia.pdf', displayName: 'Asia Map' },
@@ -109,7 +109,7 @@ export default function BrainstormBubbles() {
   return (
     <>
       {/* Brainstorm Bubbles Section */}
-      <section className="relative py-24 px-6 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-muted/20 to-background overflow-hidden">
+      <section className="relative py-24 px-6 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-muted/30 to-primary/[0.03] overflow-hidden border-y border-border/50">
         {/* Animated Background Bubbles */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {/* Large floating bubbles */}
@@ -146,10 +146,10 @@ export default function BrainstormBubbles() {
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category)}
-                className="group relative focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-2xl transition-all duration-300 animate-bubble-float"
+                className="group relative rounded-2xl transition-all duration-300 animate-bubble-float focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
-                <Card className="border-0 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-110 bg-gradient-to-br from-card to-card/80 overflow-hidden relative">
+                <Card className="border border-border/60 shadow-md hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02] bg-card overflow-hidden relative">
                   {/* Animated bubble glow effect */}
                   <div className={`absolute -inset-1 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 rounded-2xl animate-bubble-pulse`} />
                   
@@ -159,7 +159,7 @@ export default function BrainstormBubbles() {
                     
                     {/* Content */}
                     <div className="relative z-10">
-                      <div className={`mx-auto mb-4 w-20 h-20 bg-gradient-to-br ${category.gradient} rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-125 transition-transform duration-300 animate-bubble-float`} style={{ animationDelay: `${index * 0.2 + 0.1}s` }}>
+                      <div className={`mx-auto mb-4 w-20 h-20 bg-gradient-to-br ${category.gradient} rounded-full flex items-center justify-center ${category.iconForegroundClass} shadow-md group-hover:scale-110 transition-transform duration-300 animate-bubble-float`} style={{ animationDelay: `${index * 0.2 + 0.1}s` }}>
                         {category.icon}
                       </div>
                       <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
@@ -229,9 +229,9 @@ export default function BrainstormBubbles() {
         title={selectedPDF ? selectedPDF.displayName : ''}
         className="w-full max-w-7xl mx-2 flex flex-col"
       >
-        <div className="flex-1 overflow-hidden relative bg-gray-100 dark:bg-gray-900" style={{ minHeight: '600px', maxHeight: 'calc(90vh - 120px)' }}>
+        <div className="flex-1 overflow-hidden relative bg-muted" style={{ minHeight: '600px', maxHeight: 'calc(90vh - 120px)' }}>
           {isPDFLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-900 z-50">
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-muted">
               <div className="text-center">
                 <div className="relative mb-6">
                   <Loader2 className="h-16 w-16 animate-spin text-primary mx-auto" />

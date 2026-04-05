@@ -6,7 +6,7 @@ module.exports = {
       script: 'node_modules/next/dist/bin/next',
       args: 'start -p 3004',
       interpreter: 'node',
-      instances: 1,
+      instances: 1, 
       exec_mode: 'fork',
       autorestart: true,
       max_restarts: 5,

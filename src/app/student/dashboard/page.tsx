@@ -105,10 +105,17 @@ export default function StudentDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'upcoming': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-      case 'completed': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-      case 'cancelled': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+      case 'upcoming':
+      case 'confirmed':
+        return 'border-transparent bg-primary/15 text-primary dark:bg-primary/20 dark:text-primary'
+      case 'completed':
+        return 'border-transparent bg-success/15 text-success dark:bg-success/20 dark:text-success'
+      case 'cancelled':
+        return 'border-transparent bg-destructive/15 text-destructive dark:bg-destructive/20 dark:text-destructive-foreground'
+      case 'pending':
+        return 'border-transparent bg-warning/20 text-warning-foreground dark:bg-warning/25'
+      default:
+        return 'border-transparent bg-muted text-muted-foreground'
     }
   }
 
@@ -150,14 +157,14 @@ export default function StudentDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Student Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here's your learning progress.</p>
+      <div className="mb-8 rounded-xl border border-border/60 bg-card/50 p-6 shadow-sm">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Student Dashboard</h1>
+        <p className="text-muted-foreground">Welcome back! Here&apos;s your learning progress.</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
@@ -170,7 +177,7 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Upcoming Sessions</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -183,7 +190,7 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Bookings</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -196,7 +203,7 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Average Improvement</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -209,7 +216,7 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Subjects</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
@@ -225,7 +232,7 @@ export default function StudentDashboard() {
 
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Upcoming Sessions */}
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader>
             <CardTitle>Upcoming Sessions</CardTitle>
             <CardDescription>Your scheduled tutoring sessions</CardDescription>
@@ -234,7 +241,7 @@ export default function StudentDashboard() {
             {upcomingBookings.length > 0 ? (
               <div className="space-y-4">
                 {upcomingBookings.map(booking => (
-                  <div key={booking.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                  <div key={booking.id} className="flex items-center space-x-4 rounded-lg border border-border/60 bg-muted/20 p-4">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={booking.tutorAvatar} alt={booking.tutorName} />
                       <AvatarFallback>{booking.tutorName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
@@ -259,7 +266,7 @@ export default function StudentDashboard() {
                         <Button 
                           size="sm" 
                           onClick={() => handleJoinSession(booking.id)}
-                          className="bg-green-600 hover:bg-green-700"
+                          className="bg-gradient-to-r from-primary to-brand-primary-end hover:opacity-95"
                         >
                           <Video className="h-4 w-4 mr-2" />
                           Join Session
@@ -300,7 +307,7 @@ export default function StudentDashboard() {
 
         {/* Pending Bookings */}
         {pendingBookings.length > 0 && (
-          <Card>
+          <Card className="border-border/60 shadow-sm">
             <CardHeader>
               <CardTitle>Pending Bookings</CardTitle>
               <CardDescription>Waiting for tutor confirmation</CardDescription>
@@ -308,7 +315,7 @@ export default function StudentDashboard() {
             <CardContent>
               <div className="space-y-4">
                 {pendingBookings.map(booking => (
-                  <div key={booking.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                  <div key={booking.id} className="flex items-center space-x-4 rounded-lg border border-border/60 bg-muted/20 p-4">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={booking.tutorAvatar} alt={booking.tutorName} />
                       <AvatarFallback>{booking.tutorName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
@@ -316,7 +323,7 @@ export default function StudentDashboard() {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
                         <h4 className="font-semibold">{booking.tutorName}</h4>
-                        <Badge className="bg-yellow-100 text-yellow-800">
+                        <Badge className={getStatusColor('pending')}>
                           Pending
                         </Badge>
                       </div>
@@ -353,7 +360,7 @@ export default function StudentDashboard() {
         )}
 
         {/* Learning Progress */}
-        <Card>
+        <Card className="border-border/60 shadow-sm">
           <CardHeader>
             <CardTitle>Learning Progress</CardTitle>
             <CardDescription>Your improvement across subjects</CardDescription>
@@ -376,7 +383,7 @@ export default function StudentDashboard() {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Progress</span>
-                    <span className="font-medium text-green-600">+{subject.improvement}%</span>
+                    <span className="font-medium text-success">+{subject.improvement}%</span>
                   </div>
                 </div>
               ))}
@@ -386,7 +393,7 @@ export default function StudentDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <Card className="mt-8">
+      <Card className="mt-8 border-border/60 shadow-sm">
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
           <CardDescription>Your latest tutoring sessions and achievements</CardDescription>
@@ -394,7 +401,7 @@ export default function StudentDashboard() {
         <CardContent>
           <div className="space-y-4">
             {completedBookings.map(booking => (
-              <div key={booking.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+              <div key={booking.id} className="flex items-center space-x-4 rounded-lg border border-border/60 bg-muted/20 p-4">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={booking.tutorAvatar} alt={booking.tutorName} />
                   <AvatarFallback>{booking.tutorName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
