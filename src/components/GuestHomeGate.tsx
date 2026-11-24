@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAuthPopup } from '@/hooks/useAuthPopup'
 import Home from '@/app/page'
+import { FullPageSpinner } from '@/components/ui/spinner'
 
 function isHomePath(pathname: string) {
   return pathname === '/' || pathname === ''
@@ -83,7 +84,7 @@ export default function GuestHomeGate({ children }: { children: ReactNode }) {
   }, [guest, openPopup])
 
   if (isAuthLoading && !isHomePath(pathname)) {
-    return <div className="min-h-[50vh]" />
+    return <FullPageSpinner />
   }
 
   if (guest && !isHomePath(pathname)) {

@@ -9,8 +9,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Calendar, Clock, BookOpen, TrendingUp, Star, Video, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatDate } from '@/lib/utils'
-import { FullPageSpinner } from '@/components/ui/spinner'
 import CourseLevels from '@/components/CourseLevels'
+import LearningInsights from '@/components/student/LearningInsights'
+import { FullPageSpinner } from '@/components/ui/spinner'
 
 interface Booking {
   id: string
@@ -152,18 +153,7 @@ export default function StudentDashboard() {
   }
 
   // Show loading while checking authentication - moved after all hooks
-  if (isAuthLoading || !isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
+  if (isAuthLoading || !isAuthenticated || !user || loading) {
     return <FullPageSpinner text="Loading dashboard..." />;
   }
 
@@ -171,13 +161,27 @@ export default function StudentDashboard() {
   const averageImprovement = progress.length
     ? Math.round(progress.reduce((sum, item) => sum + item.improvement, 0) / progress.length)
     : 0
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const firstName = user.name?.split(' ')[0] || 'there'
+  const nextSession = upcomingBookings[0]
+  const todayPlan = [
+    continueItem
+      ? { text: `Resume ${continueItem.subject}, ${continueItem.title}`, href: continueItem.href }
+      : { text: 'Open a chapter to start your next lesson', href: '/ncert' },
+    nextSession
+      ? { text: `${nextSession.subject} session at ${nextSession.time}`, href: '/student/bookings' }
+      : { text: 'Book a tutor session when you want live help', href: '/student/tutors' },
+  ]
 
   return (
     <div className="space-y-6">
       <div className="mb-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Student Dashboard</h1>
-        <p className="mt-2 text-base text-muted-foreground">Pick up where you left off, or start something new.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">{greeting}, {firstName}</h1>
+        <p className="mt-2 text-base text-muted-foreground">Ready to learn something new?</p>
       </div>
+
+      <LearningInsights bookings={bookings} subjectCount={progress.length} />
 
       <Card className="border-border/60 shadow-sm">
         <CardHeader>
@@ -189,12 +193,37 @@ export default function StudentDashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-4">
-          <p className="text-base font-medium text-foreground">
-            {continueItem ? continueItem.title : 'No chapter in progress yet'}
-          </p>
+          <div>
+            <p className="text-base font-medium text-foreground">
+              {continueItem ? continueItem.title : 'No chapter in progress yet'}
+            </p>
+            {continueItem && (
+              <p className="mt-1 text-sm text-muted-foreground">Pick up this chapter where you left it.</p>
+            )}
+          </div>
           <Button onClick={() => router.push(continueItem?.href || '/ncert')}>
-            {continueItem ? 'Continue learning' : 'Start learning'}
+            {continueItem ? 'Resume learning' : 'Start learning'}
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/60 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-xl">Today&apos;s learning plan</CardTitle>
+          <CardDescription>What to do next, from your current chapter and sessions.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {todayPlan.map((item) => (
+            <button
+              key={item.text}
+              type="button"
+              onClick={() => router.push(item.href)}
+              className="flex w-full items-center justify-between rounded-xl border border-border/60 px-4 py-3 text-left text-sm hover:bg-muted/40"
+            >
+              <span>{item.text}</span>
+              <span className="text-primary">Open</span>
+            </button>
+          ))}
         </CardContent>
       </Card>
 

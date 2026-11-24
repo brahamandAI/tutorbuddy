@@ -12,11 +12,10 @@ export function globalNav(role?: string): GlobalNavItem[] {
 
   return [
     { name: 'Home', href: '/' },
-    { name: 'Courses', href: '/courses' },
-    { name: 'AI Tutor', href: '/ai-teaching' },
+    { name: 'Explore Courses', href: '/courses' },
     { name: 'Find Tutors', href: findTutors, match: ['/tutors', '/student/tutors'] },
     {
-      name: 'Sessions',
+      name: 'My Sessions',
       href: sessions,
       requiresAuth: true,
       match: ['/student/bookings', '/tutor/bookings', '/student/session', '/tutor/session'],

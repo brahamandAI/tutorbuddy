@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Users, Calendar, Star, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { FullPageSpinner } from '@/components/ui/spinner'
 
 export default function TutorDashboard() {
   const { user, isAuthenticated, isAuthLoading } = useAuth();
@@ -73,15 +74,8 @@ export default function TutorDashboard() {
 
 
   // Show loading while checking authentication - moved after all hooks
-  if (isAuthLoading || !isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
+  if (isAuthLoading || !isAuthenticated || !user || loading) {
+    return <FullPageSpinner text="Loading dashboard..." />;
   }
 
   return (

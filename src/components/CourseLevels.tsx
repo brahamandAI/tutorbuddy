@@ -13,13 +13,16 @@ const iconClass = [
   'bg-category-6 text-category-6-fg',
 ] as const
 
-const categories = [
-  { name: 'Kindergarten', icon: <School className="h-6 w-6" />, detail: '2 learning books', href: '/learn/kindergarten' },
-  { name: 'Primary (1-5)', icon: <BookOpen className="h-6 w-6" />, detail: '25 courses available', href: '/courses' },
-  { name: 'Middle (6-8)', icon: <GraduationCap className="h-6 w-6" />, detail: '30 courses available', href: '/courses' },
-  { name: 'Secondary (9-10)', icon: <Target className="h-6 w-6" />, detail: '35 courses available', href: '/courses' },
-  { name: 'Senior Secondary', icon: <Trophy className="h-6 w-6" />, detail: '40 courses available', href: '/courses' },
-  { name: 'JEE Main & Advanced', icon: <Award className="h-6 w-6" />, detail: '2026 syllabus, paper by paper', href: '/jee' },
+const schoolCategories = [
+  { name: 'Kindergarten', icon: <School className="h-6 w-6" />, detail: 'Fun learning for young minds', href: '/learn/kindergarten' },
+  { name: 'Primary (1-5)', icon: <BookOpen className="h-6 w-6" />, detail: 'Explore core subjects', href: '/courses' },
+  { name: 'Middle (6-8)', icon: <GraduationCap className="h-6 w-6" />, detail: 'Build strong fundamentals', href: '/courses' },
+  { name: 'Secondary (9-10)', icon: <Target className="h-6 w-6" />, detail: 'Board exam preparation', href: '/courses' },
+  { name: 'Senior Secondary', icon: <Trophy className="h-6 w-6" />, detail: 'Advanced subject learning', href: '/courses' },
+]
+
+const examCategories = [
+  { name: 'JEE Main & Advanced', icon: <Award className="h-6 w-6" />, detail: 'Competitive exam preparation', href: '/jee' },
 ]
 
 export default function CourseLevels({ embedded = false }: { embedded?: boolean }) {
@@ -35,21 +38,41 @@ export default function CourseLevels({ embedded = false }: { embedded?: boolean 
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {categories.map((category, index) => (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {schoolCategories.map((category, index) => (
             <Link key={category.name} href={category.href} className="block">
-              <Card className="group border border-border/60 bg-card shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300 ${iconClass[index]}`}>
-                      {category.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{category.name}</h3>
-                      <p className="text-sm text-muted-foreground">{category.detail}</p>
-                    </div>
-                    <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+              <Card className="group h-full border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                <CardContent className="flex items-center gap-4 p-5">
+                  <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105 ${iconClass[index]}`}>
+                    {category.icon}
                   </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-foreground">{category.name}</h3>
+                    <p className="text-sm text-muted-foreground">{category.detail}</p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        <h3 className="mb-4 mt-10 text-center text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Competitive exams
+        </h3>
+        <div className="mx-auto grid max-w-xl gap-4">
+          {examCategories.map((category) => (
+            <Link key={category.name} href={category.href} className="block">
+              <Card className="group border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                <CardContent className="flex items-center gap-4 p-5">
+                  <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconClass[5]}`}>
+                    {category.icon}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-foreground">{category.name}</h3>
+                    <p className="text-sm text-muted-foreground">{category.detail}</p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
                 </CardContent>
               </Card>
             </Link>

@@ -38,6 +38,24 @@ model User {
   sentMessages     Message[]  @relation("SentMessages")
   receivedMessages Message[]  @relation("ReceivedMessages")
   notifications    Notification[]
+  savedItems       SavedItem[]
+}
+
+model SavedItem {
+  id         String   @id @default(cuid()) @map("_id")
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String   // 'course' | 'learning'
+  resourceId String
+  title      String
+  subtitle   String?
+  href       String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, type, resourceId])
+  @@index([userId, type])
 }
 
 model StudentProfile {

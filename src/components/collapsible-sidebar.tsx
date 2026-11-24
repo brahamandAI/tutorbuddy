@@ -6,24 +6,18 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useAuthPopup } from '@/hooks/useAuthPopup';
-import { useTheme } from 'next-themes';
 import {
   LayoutDashboard,
   BookOpen,
-  GraduationCap,
-  User,
-  Clock,
-  Brain,
-  Sparkles,
-  Star,
+  Library,
+  BarChart3,
+  Users,
+  CalendarDays,
+  MessageSquare,
+  Trophy,
   Zap,
-  Camera,
-  Presentation,
-  LifeBuoy,
-  Moon,
-  Sun,
+  Home,
 } from 'lucide-react';
-import { globalNav, isNavActive } from '@/components/nav-config';
 
 interface CollapsibleSidebarProps {
   children: ReactNode;
@@ -34,6 +28,8 @@ type NavItem = {
   href: string
   icon: ReactNode
   requiresAuth?: boolean
+  iconClass?: string
+  badge?: string
 }
 
 export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps) {
@@ -51,42 +47,39 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
   }, []);
 
   const { openPopup } = useAuthPopup();
-  const { theme, setTheme } = useTheme();
-
-  const profileHref = user?.role === 'TUTOR' ? '/tutor/profile' : '/student/profile';
   const dashboardHref = user?.role === 'TUTOR' ? '/tutor/dashboard' : '/student/dashboard';
 
-  const learnItems: NavItem[] = [
-    ...(isAuthenticated
-      ? [{ name: 'Dashboard', href: dashboardHref, icon: <LayoutDashboard className="h-5 w-5" /> }]
-      : []),
-    { name: 'My Learning', href: '/ncert', icon: <BookOpen className="h-5 w-5" /> },
+  const homeItems: NavItem[] = [
+    { name: 'Home', href: '/', icon: <Home className="h-5 w-5" />, iconClass: 'bg-primary/10 text-primary' },
+    { name: 'Dashboard', href: dashboardHref, icon: <LayoutDashboard className="h-5 w-5" />, iconClass: 'bg-primary/12 text-primary' },
+    { name: 'Learning Progress', href: '/student/dashboard?section=progress', icon: <BarChart3 className="h-5 w-5" />, iconClass: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300' },
+  ];
+
+  const learningItems: NavItem[] = [
+    { name: 'My Learning', href: '/student/learning', icon: <BookOpen className="h-5 w-5" />, iconClass: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300' },
+    { name: 'My Courses', href: '/student/courses', icon: <Library className="h-5 w-5" />, iconClass: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300' },
+    { name: 'JEE / Advanced', href: '/jee', icon: <Trophy className="h-5 w-5" />, iconClass: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300' },
+  ];
+
+  const exploreItems: NavItem[] = [
+    { name: 'Available Courses', href: '/courses', icon: <Library className="h-5 w-5" />, iconClass: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300' },
+    { name: 'Learning Library', href: '/ncert', icon: <BookOpen className="h-5 w-5" />, iconClass: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-500/15 dark:text-cyan-300' },
+    { name: 'Available Tutors', href: user?.role === 'TUTOR' ? '/tutors' : '/student/tutors', icon: <Users className="h-5 w-5" />, iconClass: 'bg-pink-100 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300' },
+  ];
+
+  const connectItems: NavItem[] = [
+    { name: 'Messages', href: user?.role === 'TUTOR' ? '/tutor/messages' : '/student/messages', icon: <MessageSquare className="h-5 w-5" />, iconClass: 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300' },
+    { name: 'Sessions', href: user?.role === 'TUTOR' ? '/tutor/bookings' : '/student/bookings', icon: <CalendarDays className="h-5 w-5" />, iconClass: 'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300' },
+  ];
+
+  const groups: { label: string; items: NavItem[] }[] = [
+    { label: 'Home', items: homeItems },
+    { label: 'Learning', items: learningItems },
+    { label: 'Explore', items: exploreItems },
+    { label: 'Connect', items: connectItems },
     ...(user?.isAdmin
-      ? [{ name: 'OpenAI key', href: '/admin/openai', icon: <Zap className="h-5 w-5" /> }]
+      ? [{ label: 'Admin', items: [{ name: 'OpenAI key', href: '/admin/openai', icon: <Zap className="h-5 w-5" /> }] }]
       : []),
-    { name: 'JEE', href: '/jee', icon: <GraduationCap className="h-5 w-5" /> },
-  ];
-
-  const toolItems: NavItem[] = [
-    { name: 'AI Tutor', href: '/ai-teaching', icon: <Brain className="h-5 w-5" /> },
-    { name: 'Magic Explain', href: '/magic-explain', icon: <Sparkles className="h-5 w-5" />, requiresAuth: true },
-    { name: 'Micro Quiz', href: '/micro-quiz', icon: <Star className="h-5 w-5" />, requiresAuth: true },
-    { name: 'Doubt Battle', href: '/doubt-battle', icon: <Zap className="h-5 w-5" />, requiresAuth: true },
-    { name: 'Snap & Solve', href: '/snap-solve', icon: <Camera className="h-5 w-5" />, requiresAuth: true },
-    { name: 'Whiteboard', href: '/whiteboard', icon: <Presentation className="h-5 w-5" />, requiresAuth: true },
-  ];
-
-  const accountItems: NavItem[] = [
-    { name: 'Profile', href: profileHref, icon: <User className="h-5 w-5" />, requiresAuth: true },
-    ...(user?.role === 'TUTOR'
-      ? [{ name: 'Availability', href: '/tutor/availability', icon: <Clock className="h-5 w-5" /> }]
-      : []),
-  ];
-
-  const groups = [
-    { label: 'Learn', items: learnItems },
-    { label: 'AI Tools', items: toolItems },
-    { label: 'Account', items: accountItems },
   ];
 
   const guard = (event: MouseEvent, requiresAuth?: boolean) => {
@@ -97,11 +90,13 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
   };
 
   const itemClass = (href: string) => {
-    const active = pathname === href || pathname?.startsWith(`${href}/`);
-    return `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+    const active = href === '/'
+      ? pathname === '/'
+      : pathname === href || pathname?.startsWith(`${href}/`);
+    return `group relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
       active
-        ? 'bg-primary/10 text-primary'
-        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+        ? 'bg-primary/10 text-primary shadow-sm'
+        : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'
     }`;
   };
 
@@ -120,43 +115,22 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
   return (
     <div className="flex h-screen overflow-hidden pt-16">
       <aside
-        className={`flex h-full shrink-0 flex-col border-border bg-card transition-all duration-300 ease-in-out ${
+        className={`flex h-full shrink-0 flex-col overflow-hidden border-border bg-card shadow-[4px_0_24px_-20px_rgba(15,23,42,0.35)] transition-all duration-300 ease-in-out ${
           railHidden
             ? 'w-0 overflow-hidden border-0'
             : isCollapsed
-              ? 'w-16 border-r'
-              : 'w-60 border-r'
+              ? 'w-[72px] border-r'
+              : 'w-[268px] border-r'
         }`}
       >
-        <nav className="flex-1 space-y-5 overflow-y-auto p-3">
-          {!isCollapsed && (
-            <div className="space-y-1 lg:hidden">
-              <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Go
-              </p>
-              {globalNav(user?.role).map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={(event) => {
-                    guard(event, item.requiresAuth);
-                  }}
-                  className={isNavActive(pathname, item)
-                    ? 'flex items-center gap-3 rounded-xl bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary'
-                    : 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground'}
-                >
-                  <span>{item.name}</span>
-                </Link>
-              ))}
-            </div>
-          )}
-
+        <nav className={`flex-1 overflow-y-auto ${isCollapsed ? 'space-y-3 px-2 py-4' : 'space-y-5 px-3 py-4'}`}>
           {groups.map((group) => (
-            <div key={group.label} className="space-y-1">
+            <div key={group.label} className={`${isCollapsed ? 'space-y-2 border-b border-border/70 pb-3 last:border-0' : 'space-y-1'}`}>
               {!isCollapsed && (
-                <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  {group.label}
-                </p>
+                <div className="flex items-center gap-2 px-2 pb-1">
+                  <p className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{group.label}</p>
+                  <span className="h-px flex-1 bg-border" />
+                </div>
               )}
               {group.items.map((item) => (
                 <Link
@@ -168,32 +142,22 @@ export default function CollapsibleSidebar({ children }: CollapsibleSidebarProps
                   className={itemClass(item.href)}
                   title={isCollapsed ? item.name : undefined}
                 >
-                  {item.icon}
-                  {!isCollapsed && <span>{item.name}</span>}
+                  {(item.href === '/' ? pathname === '/' : pathname === item.href || pathname?.startsWith(`${item.href}/`)) && (
+                    <span className="absolute -left-3 h-7 w-1 rounded-r-full bg-primary" />
+                  )}
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${item.iconClass ?? 'bg-muted text-muted-foreground'}`}>
+                    {item.icon}
+                  </span>
+                  {!isCollapsed && <span className="min-w-0 flex-1 truncate">{item.name}</span>}
+                  {!isCollapsed && item.badge && (
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">{item.badge}</span>
+                  )}
                 </Link>
               ))}
             </div>
           ))}
         </nav>
 
-        <div className="space-y-1 border-t border-border p-3">
-          <Link
-            href="/contact"
-            className={itemClass('/contact')}
-            title={isCollapsed ? 'Help & Support' : undefined}
-          >
-            <LifeBuoy className="h-5 w-5" />
-            {!isCollapsed && <span>Help & Support</span>}
-          </Link>
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-            title={isCollapsed ? 'Toggle theme' : undefined}
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            {!isCollapsed && <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
-          </button>
-        </div>
       </aside>
 
       <div className="app-scroll min-h-0 min-w-0 flex-1 overflow-y-auto">

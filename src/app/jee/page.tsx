@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowRight,
@@ -151,6 +154,9 @@ function ExamSection({ exam }: { exam: JeeExam }) {
 }
 
 export default function JeePage() {
+  const [selectedExam, setSelectedExam] = useState<'main' | 'advanced'>('main')
+  const activeExam = jeeExams.find((exam) => exam.id === selectedExam)
+
   return (
     <div className="mx-auto w-full max-w-6xl space-y-8">
       <section className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
@@ -165,12 +171,20 @@ export default function JeePage() {
               Syllabus for JEE Main and JEE Advanced, organised by paper and subject. Open a section and read the PDF inside TutorBuddy.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="#main">
-                <Button>JEE Main</Button>
-              </Link>
-              <Link href="#advanced">
-                <Button variant="outline">JEE Advanced</Button>
-              </Link>
+              <Button
+                type="button"
+                variant={selectedExam === 'main' ? 'default' : 'outline'}
+                onClick={() => setSelectedExam('main')}
+              >
+                JEE Main
+              </Button>
+              <Button
+                type="button"
+                variant={selectedExam === 'advanced' ? 'default' : 'outline'}
+                onClick={() => setSelectedExam('advanced')}
+              >
+                JEE Advanced
+              </Button>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 self-end">
@@ -194,9 +208,7 @@ export default function JeePage() {
         </div>
       </section>
 
-      {jeeExams.map((exam) => (
-        <ExamSection key={exam.id} exam={exam} />
-      ))}
+      {activeExam && <ExamSection key={activeExam.id} exam={activeExam} />}
     </div>
   )
 }

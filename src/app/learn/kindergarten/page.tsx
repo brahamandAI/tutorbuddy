@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { BookOpen, Eye, FileText, Loader2, Lock } from 'lucide-react'
+import { BookOpen, Eye, FileText, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Modal } from '@/components/ui/Modal'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAuthPopup } from '@/hooks/useAuthPopup'
+import { Spinner } from '@/components/ui/spinner'
 
 const books = [
   {
@@ -107,10 +108,7 @@ export default function KindergartenPage() {
         <div className="relative bg-muted" style={{ minHeight: '600px', maxHeight: 'calc(90vh - 120px)' }}>
           {loading && (
             <div className="absolute inset-0 z-50 flex items-center justify-center bg-muted">
-              <div className="text-center">
-                <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-3" />
-                <p className="font-semibold text-foreground">Loading PDF</p>
-              </div>
+              <Spinner text="Loading PDF" />
             </div>
           )}
           {selected && (

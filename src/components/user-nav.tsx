@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { HelpCircle, LogOut, Moon, Settings, Sun, User } from 'lucide-react'
 
 export function UserNav({ user }: { user: any }) {
   const { logout } = useAuth()
@@ -28,7 +29,7 @@ export function UserNav({ user }: { user: any }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.image} alt={user?.name} />
+            <AvatarImage src={user?.picture || user?.image} alt={user?.name} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </Button>
@@ -48,26 +49,30 @@ export function UserNav({ user }: { user: any }) {
             const profilePath = user?.role === 'TUTOR' ? '/tutor/profile' : '/student/profile';
             window.location.href = profilePath;
           }}>
+            <User className="mr-2 h-4 w-4" />
             Profile
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => {
-            const dashboardPath = user?.role === 'TUTOR' ? '/tutor/dashboard' : '/student/dashboard';
-            window.location.href = dashboardPath;
+            const profilePath = user?.role === 'TUTOR' ? '/tutor/profile' : '/student/profile';
+            window.location.href = `${profilePath}?section=settings`;
           }}>
-            Dashboard
+            <Settings className="mr-2 h-4 w-4" />
+            Settings
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => {
-            const bookingsPath = user?.role === 'TUTOR' ? '/tutor/bookings' : '/student/bookings';
-            window.location.href = bookingsPath;
+            window.location.href = '/contact';
           }}>
-            Sessions
+            <HelpCircle className="mr-2 h-4 w-4" />
+            Help &amp; Support
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+          {theme === 'dark' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
           {theme === 'dark' ? 'Light mode' : 'Dark mode'}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={logout}>
+          <LogOut className="mr-2 h-4 w-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { BookOpen, Users, Award, ArrowRight, Loader2, FileText } from 'lucide-react'
+import { BookOpen, Users, Award, ArrowRight, FileText, Search, Filter } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/Input'
+import { FullPageSpinner } from '@/components/ui/spinner'
 
 interface ClassInfo {
   id: number
@@ -20,6 +22,18 @@ export default function NCERTPage() {
   const [classes, setClasses] = useState<ClassInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedClass, setSelectedClass] = useState('')
+  const [selectedSubject, setSelectedSubject] = useState('')
+  const [selectedStage, setSelectedStage] = useState('')
+  const [selectedAvailability, setSelectedAvailability] = useState('')
+
+  const stages = [
+    { id: 'primary', label: 'Primary (1-5)', ids: [1, 2, 3, 4, 5] },
+    { id: 'middle', label: 'Middle (6-8)', ids: [6, 7, 8] },
+    { id: 'secondary', label: 'Secondary (9-10)', ids: [9, 10] },
+    { id: 'senior', label: 'Senior Secondary (11-12)', ids: [11, 12] },
+  ]
 
   const getClassInfo = (classId: number): ClassInfo => {
     const classDescriptions = {
@@ -112,34 +126,102 @@ export default function NCERTPage() {
     loadAvailableClasses()
   }, [loadAvailableClasses])
 
-  const availableClasses = classes.filter(cls => cls.isAvailable)
-  const upcomingClasses = classes.filter(cls => !cls.isAvailable)
+  const subjects = Array.from(new Set(classes.flatMap((cls) => cls.subjects))).sort()
+
+  const filteredClasses = classes.filter((cls) => {
+    const haystack = `${cls.name} ${cls.description} ${cls.subjects.join(' ')}`.toLowerCase()
+    const matchesSearch = !searchTerm || haystack.includes(searchTerm.toLowerCase())
+    const matchesClass = !selectedClass || String(cls.id) === selectedClass
+    const matchesSubject = !selectedSubject || cls.subjects.includes(selectedSubject)
+    const stage = stages.find((item) => item.id === selectedStage)
+    const matchesStage = !stage || stage.ids.includes(cls.id)
+    const matchesAvailability =
+      !selectedAvailability ||
+      (selectedAvailability === 'available' && cls.isAvailable) ||
+      (selectedAvailability === 'upcoming' && !cls.isAvailable)
+    return matchesSearch && matchesClass && matchesSubject && matchesStage && matchesAvailability
+  })
+  const availableClasses = filteredClasses.filter((cls) => cls.isAvailable)
+  const upcomingClasses = filteredClasses.filter((cls) => !cls.isAvailable)
+  const clearFilters = () => {
+    setSearchTerm('')
+    setSelectedClass('')
+    setSelectedSubject('')
+    setSelectedStage('')
+    setSelectedAvailability('')
+  }
 
   if (loading) {
-    return (
-      <div>
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                Loading your classes...
-              </h2>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    return <FullPageSpinner text="Loading your classes..." />
   }
 
   return (
     <div>
       <div className="mx-auto w-full max-w-6xl space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">My Learning</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Learning Library</h1>
           <p className="mt-2 max-w-2xl text-base text-muted-foreground">
-            Pick up a chapter or choose a class. The books are ready when you are.
+            Explore all available classes and open a chapter to add it to My Learning.
           </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex flex-col gap-4 md:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search classes or subjects..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button variant="outline" type="button" onClick={clearFilters}>
+              <Filter className="mr-2 h-4 w-4" />
+              Clear filters
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            >
+              <option value="">All Classes</option>
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((id) => (
+                <option key={id} value={String(id)}>Class {id}</option>
+              ))}
+            </select>
+            <select
+              value={selectedSubject}
+              onChange={(e) => setSelectedSubject(e.target.value)}
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            >
+              <option value="">All Subjects</option>
+              {subjects.map((subject) => (
+                <option key={subject} value={subject}>{subject}</option>
+              ))}
+            </select>
+            <select
+              value={selectedStage}
+              onChange={(e) => setSelectedStage(e.target.value)}
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            >
+              <option value="">All Stages</option>
+              {stages.map((stage) => (
+                <option key={stage.id} value={stage.id}>{stage.label}</option>
+              ))}
+            </select>
+            <select
+              value={selectedAvailability}
+              onChange={(e) => setSelectedAvailability(e.target.value)}
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            >
+              <option value="">All Status</option>
+              <option value="available">Available</option>
+              <option value="upcoming">Coming soon</option>
+            </select>
+          </div>
         </div>
 
         <Card className="border-border/60 shadow-sm">
@@ -167,6 +249,13 @@ export default function NCERTPage() {
                 Try Again
               </Button>
             </div>
+          </div>
+        )}
+
+        {availableClasses.length === 0 && upcomingClasses.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-border px-6 py-12 text-center">
+            <p className="text-muted-foreground">No classes match these filters.</p>
+            <Button className="mt-4" variant="outline" onClick={clearFilters}>Clear filters</Button>
           </div>
         )}
 
@@ -243,6 +332,7 @@ export default function NCERTPage() {
           </Card>
         </div>
 
+        {upcomingClasses.length > 0 && (
         <div>
           <h2 className="mb-4 text-xl font-semibold text-foreground">Coming soon</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -265,6 +355,7 @@ export default function NCERTPage() {
             ))}
           </div>
         </div>
+        )}
 
         <div className="mt-16">
           <Card className="max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border-0">

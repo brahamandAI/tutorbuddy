@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { mockCourses, type MockCourse } from '@/data/mockCourses'
+import { FullPageSpinner } from '@/components/ui/spinner'
 import { 
   Search, 
   Filter, 
@@ -27,7 +28,9 @@ import {
   Play,
   MessageSquare,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  BookmarkPlus,
+  Check
 } from 'lucide-react'
 
 type Course = MockCourse
@@ -40,6 +43,7 @@ export default function CoursesPage() {
   const [selectedClass, setSelectedClass] = useState('')
   const [selectedBoard, setSelectedBoard] = useState('')
   const [selectedMode, setSelectedMode] = useState('')
+  const [savedCourseIds, setSavedCourseIds] = useState<Set<string>>(new Set())
 
   const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Hindi', 'Social Studies', 'Computer Science']
   const classes = ['Kindergarten', 'Class 1-5', 'Class 6-8', 'Class 9-10', 'Class 11-12', 'Competitive Exams']
@@ -53,6 +57,37 @@ export default function CoursesPage() {
       setLoading(false)
     }, 1000)
   }, [])
+
+  useEffect(() => {
+    const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0]
+    fetch('/api/student/saved-items?type=course', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then((response) => response.ok ? response.json() : [])
+      .then((items) => setSavedCourseIds(new Set(items.map((item: { resourceId: string }) => item.resourceId))))
+  }, [])
+
+  const saveCourse = async (course: Course) => {
+    const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0]
+    const response = await fetch('/api/student/saved-items', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        type: 'course',
+        resourceId: course.id,
+        title: course.title,
+        subtitle: `${course.subject} · ${course.class} · ${course.board}`,
+        href: '/courses',
+        metadata: { subject: course.subject, class: course.class, board: course.board, mode: course.mode },
+      }),
+    })
+    if (response.ok) {
+      setSavedCourseIds((current) => new Set([...Array.from(current), course.id]))
+    }
+  }
 
   const filteredCourses = courses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,20 +119,7 @@ export default function CoursesPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-muted rounded w-1/4 mb-8"></div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-80 bg-muted rounded-lg"></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    return <FullPageSpinner text="Loading courses..." />
   }
 
   return (
@@ -284,9 +306,17 @@ export default function CoursesPage() {
 
                 {/* Action Buttons */}
                 <div className="flex space-x-2">
-                  <Button className="flex-1" size="sm">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    View Details
+                  <Button
+                    className="flex-1"
+                    size="sm"
+                    variant={savedCourseIds.has(course.id) ? 'outline' : 'default'}
+                    disabled={savedCourseIds.has(course.id)}
+                    onClick={() => saveCourse(course)}
+                  >
+                    {savedCourseIds.has(course.id)
+                      ? <Check className="mr-2 h-4 w-4" />
+                      : <BookmarkPlus className="mr-2 h-4 w-4" />}
+                    {savedCourseIds.has(course.id) ? 'In My Courses' : 'Add to My Courses'}
                   </Button>
                   <Button variant="outline" size="sm">
                     <MessageSquare className="mr-2 h-4 w-4" />

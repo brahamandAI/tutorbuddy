@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import ModernPDFViewer from '@/components/ModernPDFViewer'
 import { Badge } from '@/components/ui/badge'
+import { FullPageSpinner, Spinner } from '@/components/ui/spinner'
 
 interface ChapterInfo {
   number: number
@@ -95,6 +96,22 @@ export default function ChapterPage() {
       subject: subjectNames[subjectId] || subjectId,
       className,
     }))
+    const token = localStorage.getItem('token') || document.cookie.split('token=')[1]?.split(';')[0]
+    fetch('/api/student/saved-items', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        type: 'learning',
+        resourceId: `${className}-${subjectId}-${chapterNumber}`,
+        title: chapter.title,
+        subtitle: `${subjectNames[subjectId] || subjectId} · Class ${className}`,
+        href: `/ncert/${className}/${subjectId}/${chapterNumber}`,
+        metadata: { className, subjectId, chapterNumber },
+      }),
+    }).catch(() => {})
   }, [chapter, className, subjectId, chapterNumber])
 
   const getSubjectDisplayName = (subjectId: string) => {
@@ -128,20 +145,7 @@ export default function ChapterPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                AI is preparing your chapter...
-              </h2>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    return <FullPageSpinner text="Preparing your chapter..." />
   }
 
   if (error && !chapter) {
@@ -257,10 +261,7 @@ export default function ChapterPage() {
         <Suspense 
           fallback={
             <div className="flex items-center justify-center h-96">
-              <div className="text-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-2" />
-                <p className="text-gray-600 dark:text-gray-400">Loading PDF Viewer...</p>
-              </div>
+              <Spinner text="Loading PDF viewer..." />
             </div>
           }
         >

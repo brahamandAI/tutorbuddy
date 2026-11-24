@@ -8,12 +8,12 @@ import {
   Landmark,
   X,
   FileText,
-  Eye,
-  Loader2
+  Eye
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Modal } from '@/components/ui/Modal'
+import { Spinner } from '@/components/ui/spinner'
 
 interface PDFResource {
   name: string
@@ -106,7 +106,7 @@ export default function BrainstormBubbles() {
   return (
     <>
       {/* Brainstorm Bubbles Section */}
-      <section className="relative py-24 px-6 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-muted/30 to-primary/[0.03] overflow-hidden border-y border-border/50">
+      <section className="relative py-10 px-6 sm:px-6 lg:px-8 bg-gradient-to-br from-background via-muted/30 to-primary/[0.03] overflow-hidden border-y border-border/50">
         {/* Animated Background Bubbles */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {/* Large floating bubbles */}
@@ -123,7 +123,7 @@ export default function BrainstormBubbles() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
               <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center animate-bubble-pulse">
                 <FileText className="h-8 w-8 text-primary" />
@@ -229,21 +229,7 @@ export default function BrainstormBubbles() {
         <div className="flex-1 overflow-hidden relative bg-muted" style={{ minHeight: '600px', maxHeight: 'calc(90vh - 120px)' }}>
           {isPDFLoading && (
             <div className="absolute inset-0 z-50 flex items-center justify-center bg-muted">
-              <div className="text-center">
-                <div className="relative mb-6">
-                  <Loader2 className="h-16 w-16 animate-spin text-primary mx-auto" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <FileText className="h-8 w-8 text-primary/50" />
-                  </div>
-                </div>
-                <p className="text-lg font-semibold text-foreground mb-2">Loading PDF</p>
-                <p className="text-sm text-muted-foreground">{selectedPDF?.displayName}</p>
-                <div className="mt-4 flex justify-center space-x-1">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
-                </div>
-              </div>
+              <Spinner size="lg" text={selectedPDF?.displayName ? `Loading ${selectedPDF.displayName}` : 'Loading PDF'} />
             </div>
           )}
           {selectedPDF && (

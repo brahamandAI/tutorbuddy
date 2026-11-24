@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Lottie } from 'lottie-react'
 import { cn } from '@/lib/utils'
 
 interface SpinnerProps {
@@ -6,43 +10,58 @@ interface SpinnerProps {
   text?: string
 }
 
-export function Spinner({ size = 'md', className, text }: SpinnerProps) {
-  const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12'
+const sizeClasses = {
+  sm: 'h-16 w-16',
+  md: 'h-28 w-28',
+  lg: 'h-40 w-40',
+}
+
+let animationPromise: Promise<unknown> | null = null
+
+function loadAnimation() {
+  if (!animationPromise) {
+    animationPromise = fetch('/animation/loading.json').then((response) => response.json())
   }
+  return animationPromise
+}
+
+export function Spinner({ size = 'md', className, text }: SpinnerProps) {
+  const [animationData, setAnimationData] = useState<object | null>(null)
+
+  useEffect(() => {
+    let active = true
+    loadAnimation().then((data) => {
+      if (active) setAnimationData(data as object)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
-    <div className={cn('flex flex-col items-center justify-center space-y-3', className)}>
-      <div
-        className={cn(
-          'animate-spin rounded-full border-2 border-gray-200 border-t-blue-600',
-          sizeClasses[size]
-        )}
-      />
-      {text && (
-        <p className="text-sm text-muted-foreground animate-pulse">{text}</p>
+    <div className={cn('flex flex-col items-center justify-center', className)}>
+      {animationData ? (
+        <Lottie src={animationData} autoplay loop className={sizeClasses[size]} />
+      ) : (
+        <div className={sizeClasses[size]} />
       )}
+      {text && <p className="mt-1 text-sm text-muted-foreground">{text}</p>}
     </div>
   )
 }
 
-// Full page loading spinner
 export function FullPageSpinner({ text = 'Loading...' }: { text?: string }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="flex h-[calc(100dvh-4rem)] w-full items-center justify-center">
       <Spinner size="lg" text={text} />
     </div>
   )
 }
 
-// Inline loading spinner
 export function InlineSpinner({ size = 'sm', className }: Omit<SpinnerProps, 'text'>) {
   return <Spinner size={size} className={className} />
 }
 
-// Loading skeleton for cards
 export function CardSkeleton() {
   return (
     <div className="animate-pulse">
@@ -53,7 +72,6 @@ export function CardSkeleton() {
   )
 }
 
-// Loading skeleton for booking cards
 export function BookingSkeleton() {
   return (
     <div className="animate-pulse">
@@ -79,4 +97,4 @@ export function BookingSkeleton() {
       </div>
     </div>
   )
-} 
+}

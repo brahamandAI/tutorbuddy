@@ -3,9 +3,10 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { BookOpen, ArrowLeft, FileText, ChevronRight, Loader2, Brain, Sparkles, Zap } from 'lucide-react'
+import { BookOpen, ArrowLeft, FileText, ChevronRight, Brain, Sparkles, Zap } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/Button'
+import { FullPageSpinner } from '@/components/ui/spinner'
 
 interface Subject {
   id: string
@@ -87,20 +88,7 @@ export default function ClassPage() {
   }
 
   if (loading) {
-    return (
-      <div className="bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                AI is preparing your learning path...
-              </h2>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    return <FullPageSpinner text="Preparing your learning path..." />
   }
 
   return (
