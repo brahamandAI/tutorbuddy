@@ -27,6 +27,7 @@ interface ModernPDFViewerProps {
   pdfUrl: string
   title?: string
   className?: string
+  initialPage?: number
 }
 
 interface Summary {
@@ -54,9 +55,10 @@ export default function ModernPDFViewer({
   pdfUrl,
   title,
   className = '',
+  initialPage = 1,
 }: ModernPDFViewerProps) {
   const [zoom, setZoom] = useState<number>(100)
-  const [page, setPage] = useState<number>(1)
+  const [page, setPage] = useState<number>(initialPage > 0 ? initialPage : 1)
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false)
   const [selectedPages, setSelectedPages] = useState<number[]>([])
   const [summary, setSummary] = useState<Summary | null>(null)
@@ -64,6 +66,10 @@ export default function ModernPDFViewer({
   const [totalPages, setTotalPages] = useState<number>(10) // Default fallback
   const [isLoadingPages, setIsLoadingPages] = useState<boolean>(true)
   const [activeTab, setActiveTab] = useState<'summary' | 'chat' | 'learning'>('summary')
+
+  useEffect(() => {
+    if (initialPage > 0) setPage(initialPage)
+  }, [initialPage, pdfUrl])
 
   // Detect total pages from PDF using PDF.js
   useEffect(() => {

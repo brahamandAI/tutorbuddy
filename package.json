@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "postbuild": "cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public",
+    "build": "prisma generate && next build",
     "build:prod": "./scripts/build-production.sh",
     "start": "next start",
     "lint": "next lint",
@@ -16,7 +15,8 @@
     "db:reset": "node scripts/reset-database.js",
     "db:seed": "node prisma/seed.js",
     "db:ingest": "node scripts/ingest-real-data.js",
-    "db:add-passwords": "node scripts/add-passwords-to-mock-users.js"
+    "db:add-passwords": "node scripts/add-passwords-to-mock-users.js",
+    "pdfs:download": "node scripts/download-ncert-pdfs.js"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.4.0",

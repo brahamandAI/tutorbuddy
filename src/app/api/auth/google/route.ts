@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { prisma } from '@/lib/prisma';
+import { setAuthCookie } from '@/lib/auth';
 
 interface GoogleUserInfo {
   id: string;
@@ -270,7 +271,7 @@ export async function POST(request: NextRequest) {
     };
     
     console.log('✅ Google OAuth: Success! Returning response');
-    return NextResponse.json(responseData);
+    return setAuthCookie(NextResponse.json(responseData), token);
 
   } catch (error) {
     console.error('❌ Google OAuth error:', error);

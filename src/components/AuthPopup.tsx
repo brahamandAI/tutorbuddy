@@ -76,7 +76,21 @@ export function AuthPopup({ open, onClose, defaultMode = 'register', defaultRole
   const { login, register, loginWithGoogle } = useAuth();
   const { toast } = useToast();
 
-  if (!open) return null;
+  const [rendered, setRendered] = useState(open)
+  const [shown, setShown] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      setRendered(true)
+      const frame = requestAnimationFrame(() => setShown(true))
+      return () => cancelAnimationFrame(frame)
+    }
+    setShown(false)
+    const timer = window.setTimeout(() => setRendered(false), 220)
+    return () => window.clearTimeout(timer)
+  }, [open])
+
+  if (!rendered) return null;
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -192,8 +206,14 @@ export function AuthPopup({ open, onClose, defaultMode = 'register', defaultRole
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-background rounded-lg shadow-xl w-full max-w-md mx-4 p-0 relative animate-in fade-in-0 zoom-in-95 duration-200">
+    <div
+      className={`fixed inset-0 z-[80] flex items-center justify-center bg-foreground/25 backdrop-blur-md transition-opacity duration-200 ${shown ? 'opacity-100' : 'opacity-0'}`}
+      onClick={onClose}
+    >
+      <div
+        className={`bg-card/80 backdrop-blur-xl border border-border/60 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-0 relative transition-all duration-200 ${shown ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+        onClick={(event) => event.stopPropagation()}
+      >
         {/* Close Button */}
         <button
           onClick={onClose}

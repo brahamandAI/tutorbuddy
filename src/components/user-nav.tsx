@@ -1,6 +1,7 @@
 "use client"
 
 import { useAuth } from '@/contexts/AuthContext'
+import { useTheme } from 'next-themes'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/Button"
 import {
@@ -15,6 +16,7 @@ import {
 
 export function UserNav({ user }: { user: any }) {
   const { logout } = useAuth()
+  const { theme, setTheme } = useTheme()
   const initials = user?.name
     ?.split(' ')
     .map((n: string) => n[0])
@@ -58,10 +60,13 @@ export function UserNav({ user }: { user: any }) {
             const bookingsPath = user?.role === 'TUTOR' ? '/tutor/bookings' : '/student/bookings';
             window.location.href = bookingsPath;
           }}>
-            {user?.role === 'TUTOR' ? 'My Bookings' : 'My Bookings'}
+            Sessions
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={logout}>
           Log out
         </DropdownMenuItem>

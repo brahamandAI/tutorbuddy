@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Inter } from 'next/font/google'
 import { Providers } from '@/components/providers'
-import Chatbot from '@/components/Chatbot'
+import AuthenticatedTools from '@/components/AuthenticatedTools'
 import Navbar from '@/components/navbar'
 import { GlobalAuthPopup } from '@/components/GlobalAuthPopup'
 import { SidebarProvider } from '@/contexts/SidebarContext'
 import ConditionalSidebarWrapper from '@/components/ConditionalSidebarWrapper'
-import { LearningToolsProvider, ToolsLauncher, AITutorChat, SnapSolve } from '@/components/learning-tools'
+import GuestHomeGate from '@/components/GuestHomeGate'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -32,15 +32,10 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           <ConditionalSidebarWrapper>
-            <main className="pt-16">
-              {children}
-            </main>
+            <GuestHomeGate>{children}</GuestHomeGate>
           </ConditionalSidebarWrapper>
-          <Chatbot />
+          <AuthenticatedTools />
           <GlobalAuthPopup />
-          <ToolsLauncher />
-          <AITutorChat />
-          <SnapSolve />
         </Providers>
       </body>
     </html>

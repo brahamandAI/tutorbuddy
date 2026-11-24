@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
+import { useAuthPopup } from '@/hooks/useAuthPopup'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -47,6 +50,9 @@ interface QuickAction {
 }
 
 export default function Chatbot() {
+  const router = useRouter()
+  const { isAuthenticated } = useAuth()
+  const { openPopup } = useAuthPopup()
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
@@ -194,9 +200,10 @@ export default function Chatbot() {
       <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={() => setIsOpen(true)}
-          className="w-16 h-16 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+          className="h-12 gap-2 rounded-full px-4 shadow-md"
         >
-          <MessageSquare className="h-6 w-6" />
+          <Sparkles className="h-4 w-4" />
+          AI Buddy
         </Button>
       </div>
     )
@@ -204,7 +211,7 @@ export default function Chatbot() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <Card className={`w-80 shadow-xl border-0 bg-gradient-to-br from-card to-card/50 ${isMinimized ? 'h-16' : 'h-96'}`}>
+      <Card className={`w-[min(20rem,calc(100vw-1.5rem))] border-border/60 shadow-lg ${isMinimized ? 'h-16' : 'h-[min(28rem,calc(100dvh-6rem))]'}`}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -212,11 +219,8 @@ export default function Chatbot() {
                 <Bot className="h-4 w-4 text-white" />
               </div>
               <div>
-                <CardTitle className="text-sm">ब्रह्मांड Ai</CardTitle>
-                <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-xs text-muted-foreground">Online</span>
-                </div>
+                <CardTitle className="text-sm">AI Buddy</CardTitle>
+                <span className="text-xs text-muted-foreground">Your learning companion</span>
               </div>
             </div>
             <div className="flex items-center space-x-1">
@@ -251,6 +255,31 @@ export default function Chatbot() {
         {!isMinimized && (
           <CardContent className="p-0">
             {/* Language Selector */}
+            <div className="flex flex-wrap gap-2 px-4 pb-2">
+              {[
+                ['Explain', '/magic-explain'],
+                ['Quiz', '/micro-quiz'],
+                ['Chapters', '/ncert'],
+                ['JEE', '/jee'],
+              ].map(([label, href]) => (
+                <Button
+                  key={href}
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => {
+                    setIsOpen(false)
+                    if (!isAuthenticated) {
+                      openPopup('login')
+                      return
+                    }
+                    router.push(href)
+                  }}
+                >
+                  {label}
+                </Button>
+              ))}
+            </div>
             <div className="px-4 pb-2">
               <select
                 value={selectedLanguage}

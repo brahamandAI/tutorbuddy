@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { BookOpen, Users, Award, ArrowRight, GraduationCap, Star, Loader2, FileText, Brain, Sparkles, Zap, Bot } from 'lucide-react'
+import { BookOpen, Users, Award, ArrowRight, Loader2, FileText } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/badge'
@@ -117,13 +117,13 @@ export default function NCERTPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+      <div>
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
               <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                Initializing AI Tutor Hub...
+                Loading your classes...
               </h2>
             </div>
           </div>
@@ -133,26 +133,31 @@ export default function NCERTPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <div className="relative w-24 h-24 rounded-full bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 flex items-center justify-center mx-auto mb-6 shadow-xl">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 animate-pulse opacity-75"></div>
-            <Brain className="h-12 w-12 text-white relative z-10" />
-          </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent mb-4 animate-pulse">
-            AI Tutor Hub
-          </h1>
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Sparkles className="h-5 w-5 text-purple-500 animate-spin" />
-            <span className="text-sm font-medium text-purple-600 dark:text-purple-400">Powered by Advanced AI</span>
-            <Sparkles className="h-5 w-5 text-cyan-500 animate-spin" />
-          </div>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            Experience intelligent, personalized learning with AI-powered summaries, interactive Q&A, and adaptive exercises. 
-            Transform your study sessions from Class 1 to 12 with our advanced AI tutor companion.
+    <div>
+      <div className="mx-auto w-full max-w-6xl space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">My Learning</h1>
+          <p className="mt-2 max-w-2xl text-base text-muted-foreground">
+            Pick up a chapter or choose a class. The books are ready when you are.
           </p>
         </div>
+
+        <Card className="border-border/60 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl">Continue learning</CardTitle>
+            <CardDescription>Open a class and start with the first available chapter.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-3">
+            {availableClasses[0] ? (
+              <Link href={`/ncert/${availableClasses[0].id}`}>
+                <Button>Continue with {availableClasses[0].name}</Button>
+              </Link>
+            ) : null}
+            <Link href="/ai-teaching">
+              <Button variant="outline">Ask AI Tutor</Button>
+            </Link>
+          </CardContent>
+        </Card>
 
         {error && (
           <div className="mb-8 p-4 bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 rounded-lg">
@@ -165,59 +170,12 @@ export default function NCERTPage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card className="text-center bg-gradient-to-br from-white/90 to-purple-50/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="relative">
-                <Brain className="h-8 w-8 text-purple-500 mx-auto mb-3" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              </div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                {availableClasses.length}
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">AI Learning Paths</div>
-            </CardContent>
-          </Card>
-          <Card className="text-center bg-gradient-to-br from-white/90 to-cyan-50/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="relative">
-                <Zap className="h-8 w-8 text-cyan-500 mx-auto mb-3" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-bounce"></div>
-              </div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-                {availableClasses.reduce((sum, cls) => sum + cls.subjects.length, 0)}
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">Smart Subjects</div>
-            </CardContent>
-          </Card>
-          <Card className="text-center bg-gradient-to-br from-white/90 to-indigo-50/90 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="relative">
-                <Bot className="h-8 w-8 text-indigo-500 mx-auto mb-3" />
-                <Sparkles className="absolute -top-2 -right-2 h-4 w-4 text-yellow-400 animate-pulse" />
-              </div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                {availableClasses.reduce((sum, cls) => sum + cls.totalChapters, 0)}
-              </div>
-              <div className="text-gray-600 dark:text-gray-400">AI-Enhanced Chapters</div>
-            </CardContent>
-          </Card>
-        </div>
-
         {availableClasses.length > 0 && (
           <div className="mb-12">
-            <div className="flex items-center mb-6">
-              <div className="relative mr-3">
-                <Brain className="h-6 w-6 text-purple-500" />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              </div>
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                AI-Powered Learning Available
-              </h2>
-            </div>
+            <h2 className="mb-4 text-xl font-semibold text-foreground">Choose a class</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {availableClasses.map((classInfo) => (
-                <Card key={classInfo.id} className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white/80 backdrop-blur-sm border-0">
+                <Card key={classInfo.id} className="border-border/60 shadow-sm">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between mb-2">
                       <Badge variant="default" className="bg-green-500 text-white">
@@ -252,7 +210,7 @@ export default function NCERTPage() {
                     </div>
                     
                     <Link href={`/ncert/${classInfo.id}`}>
-                      <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all duration-300 group">
+                      <Button className="w-full">
                         <span className="mr-2">Explore {classInfo.name}</span>
                         <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </Button>
@@ -264,13 +222,29 @@ export default function NCERTPage() {
           </div>
         )}
 
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card className="border-border/60 text-center shadow-sm">
+            <CardContent className="p-6">
+              <div className="text-2xl font-bold text-foreground">{availableClasses.length}</div>
+              <div className="text-sm text-muted-foreground">Classes ready</div>
+            </CardContent>
+          </Card>
+          <Card className="border-border/60 text-center shadow-sm">
+            <CardContent className="p-6">
+              <div className="text-2xl font-bold text-foreground">{availableClasses.reduce((sum, cls) => sum + cls.subjects.length, 0)}</div>
+              <div className="text-sm text-muted-foreground">Subjects</div>
+            </CardContent>
+          </Card>
+          <Card className="border-border/60 text-center shadow-sm">
+            <CardContent className="p-6">
+              <div className="text-2xl font-bold text-foreground">{availableClasses.reduce((sum, cls) => sum + cls.totalChapters, 0)}</div>
+              <div className="text-sm text-muted-foreground">Chapters</div>
+            </CardContent>
+          </Card>
+        </div>
+
         <div>
-          <div className="flex items-center mb-6">
-            <BookOpen className="h-6 w-6 text-gray-500 mr-2" />
-            <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
-              Coming Soon
-            </h2>
-          </div>
+          <h2 className="mb-4 text-xl font-semibold text-foreground">Coming soon</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {upcomingClasses.map((classInfo) => (
               <Card key={classInfo.id} className="opacity-75 hover:opacity-90 transition-opacity bg-white/60 backdrop-blur-sm border-0">

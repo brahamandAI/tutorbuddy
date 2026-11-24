@@ -203,8 +203,17 @@
   * {
     @apply border-border;
   }
+  html {
+    font-size: clamp(13px, 0.35vw + 10.5px, 16px);
+  }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Pages already sit in a viewport-sized shell. A nested min-h-screen
+     makes every screen taller than the window. */
+  .app-scroll .min-h-screen,
+  .app-scroll .min-h-\[calc\(100vh-4rem\)\] {
+    min-height: auto;
   }
 }
 

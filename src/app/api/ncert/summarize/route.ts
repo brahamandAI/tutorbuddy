@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
-
-// Initialize OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-})
+import { createOpenAI } from '@/lib/openaiKey'
 
 interface SummarizeRequest {
   pdfPath: string
@@ -90,6 +85,11 @@ export async function POST(request: NextRequest) {
         } else {
           summaryPrompt = `Provide a concise yet comprehensive summary of this ${chapterInfo.subject} content, highlighting key concepts, their significance, and connections to broader academic understanding. Content: ${actualContent}`
         }
+    }
+
+    const openai = await createOpenAI()
+    if (!openai) {
+      return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 503 })
     }
 
     // Generate summary using OpenAI
@@ -196,6 +196,11 @@ Guidelines:
 - Be encouraging and supportive in your teaching approach
 
 Current student question: "${chatMessage}"`
+
+    const openai = await createOpenAI()
+    if (!openai) {
+      return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 503 })
+    }
 
     // Generate contextual response
     const completion = await openai.chat.completions.create({

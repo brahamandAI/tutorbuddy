@@ -10,6 +10,7 @@ import { Calendar, Clock, BookOpen, TrendingUp, Star, Video, MessageSquare } fro
 import { useAuth } from '@/contexts/AuthContext'
 import { formatDate } from '@/lib/utils'
 import { FullPageSpinner } from '@/components/ui/spinner'
+import CourseLevels from '@/components/CourseLevels'
 
 interface Booking {
   id: string
@@ -32,14 +33,17 @@ interface Progress {
 }
 
 export default function StudentDashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isAuthLoading } = useAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([])
   const [progress, setProgress] = useState<Progress[]>([])
   const [loading, setLoading] = useState(true)
+  const [continueItem, setContinueItem] = useState<{ title: string; href: string; subject: string; className: string } | null>(null)
 
   // Redirect if not authenticated or not a student
   useEffect(() => {
+    if (isAuthLoading) return;
+
     if (!isAuthenticated) {
       router.push('/');
       return;
@@ -49,7 +53,16 @@ export default function StudentDashboard() {
       router.push('/');
       return;
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthLoading, isAuthenticated, user, router]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('tb-continue')
+      if (raw) setContinueItem(JSON.parse(raw))
+    } catch {
+      setContinueItem(null)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -139,7 +152,7 @@ export default function StudentDashboard() {
   }
 
   // Show loading while checking authentication - moved after all hooks
-  if (!isAuthenticated || !user) {
+  if (isAuthLoading || !isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -154,78 +167,110 @@ export default function StudentDashboard() {
     return <FullPageSpinner text="Loading dashboard..." />;
   }
 
+  const isEmpty = bookings.length === 0 && progress.length === 0
+  const averageImprovement = progress.length
+    ? Math.round(progress.reduce((sum, item) => sum + item.improvement, 0) / progress.length)
+    : 0
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="mb-8 rounded-xl border border-border/60 bg-card/50 p-6 shadow-sm">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">Student Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here&apos;s your learning progress.</p>
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Student Dashboard</h1>
+        <p className="mt-2 text-base text-muted-foreground">Pick up where you left off, or start something new.</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+      <Card className="border-border/60 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-xl">Continue learning</CardTitle>
+          <CardDescription>
+            {continueItem
+              ? `${continueItem.subject} · Class ${continueItem.className}`
+              : 'Open a chapter and it will show up here next time.'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-4">
+          <p className="text-base font-medium text-foreground">
+            {continueItem ? continueItem.title : 'No chapter in progress yet'}
+          </p>
+          <Button onClick={() => router.push(continueItem?.href || '/ncert')}>
+            {continueItem ? 'Continue learning' : 'Start learning'}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <CourseLevels embedded />
+
+      {isEmpty ? (
         <Card className="border-border/60 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sessions</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="text-xl">Start your learning journey</CardTitle>
+            <CardDescription>Find a tutor, open a course, or ask the AI Tutor.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{bookings.length}</div>
-            <p className="text-xs text-muted-foreground">
-              +2 from last month
-            </p>
+          <CardContent className="flex flex-wrap gap-3">
+            <Button onClick={() => router.push('/student/tutors')}>Find a tutor</Button>
+            <Button variant="outline" onClick={() => router.push('/courses')}>Explore courses</Button>
+            <Button variant="outline" onClick={() => router.push('/ai-teaching')}>Try AI Tutor</Button>
           </CardContent>
         </Card>
-
-        <Card className="border-border/60 shadow-sm">
+      ) : (
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="cursor-pointer border-border/60 shadow-sm transition-colors hover:bg-muted/40" onClick={() => router.push('/student/bookings')}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Sessions</CardTitle>
+            <CardTitle className="text-sm font-medium">Upcoming sessions</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{upcomingBookings.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {upcomingBookings.length > 0 ? 'Next session soon' : 'No upcoming sessions'}
-            </p>
+            <p className="text-xs text-primary">View sessions</p>
           </CardContent>
         </Card>
 
-        <Card className="border-border/60 shadow-sm">
+        <Card className="cursor-pointer border-border/60 shadow-sm transition-colors hover:bg-muted/40" onClick={() => router.push('/student/bookings')}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Bookings</CardTitle>
+            <CardTitle className="text-sm font-medium">Pending bookings</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{pendingBookings.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {pendingBookings.length > 0 ? 'Waiting for confirmation' : 'All confirmed'}
-            </p>
+            <p className="text-xs text-primary">Manage bookings</p>
           </CardContent>
         </Card>
 
-        <Card className="border-border/60 shadow-sm">
+        <Card className="cursor-pointer border-border/60 shadow-sm transition-colors hover:bg-muted/40" onClick={() => router.push('/ncert')}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Improvement</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">23%</div>
-            <p className="text-xs text-muted-foreground">
-              +5% from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/60 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Subjects</CardTitle>
+            <CardTitle className="text-sm font-medium">Active subjects</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{progress.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Currently studying
-            </p>
+            <p className="text-xs text-primary">Explore subjects</p>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer border-border/60 shadow-sm transition-colors hover:bg-muted/40" onClick={() => router.push('/ncert')}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average improvement</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{progress.length ? `${averageImprovement}%` : '—'}</div>
+            <p className="text-xs text-primary">View progress</p>
+          </CardContent>
+        </Card>
+      </div>
+      )}
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="border-border/60 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-xl">Recommended next</CardTitle>
+            <CardDescription>Ways to keep going from here.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-3">
+            <Button variant="outline" onClick={() => router.push('/courses')}>Courses</Button>
+            <Button variant="outline" onClick={() => router.push('/student/tutors')}>Tutors</Button>
+            <Button variant="outline" onClick={() => router.push('/ai-teaching')}>AI Tutor</Button>
+            <Button variant="outline" onClick={() => router.push('/jee')}>JEE syllabus</Button>
           </CardContent>
         </Card>
       </div>

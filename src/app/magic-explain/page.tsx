@@ -1,8 +1,7 @@
 'use client';
-import React, { useState, useRef } from 'react';
-import { LearningToolsProvider, MagicExplain, ToolsLauncher, useLearningTools } from '@/components/learning-tools';
+import React, { useState, useRef, useEffect } from 'react';
+import { LearningToolsProvider, useLearningTools } from '@/components/learning-tools';
 import { postJSON, postForm } from '@/lib/apiClient';
-import { Sparkles } from 'lucide-react';
 // import Lottie from 'lottie-react';
 // import magicAnimation from '@/public/animations/magic.json';
 
@@ -15,6 +14,14 @@ function MagicExplainInterface() {
   const { selectedText, userMeta, onToolUsed } = useLearningTools();
   const [level, setLevel] = useState<ExplainLevel>(userMeta.classLevel as ExplainLevel || 'Class10');
   const [text, setText] = useState(selectedText || '');
+
+  useEffect(() => {
+    const asked = sessionStorage.getItem('tb-ask')
+    if (asked) {
+      setText(asked)
+      sessionStorage.removeItem('tb-ask')
+    }
+  }, [])
   const [file, setFile] = useState<File | null>(null);
   const [uploadMode, setUploadMode] = useState<'text' | 'file'>('text');
   const [result, setResult] = useState<any>(null);
@@ -138,9 +145,9 @@ function MagicExplainInterface() {
   };
 
   return (
-    <div className="bg-white/80 dark:bg-purple-900/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-purple-200 dark:border-purple-800">
-      <h2 className="text-2xl font-bold text-purple-900 dark:text-white mb-6 text-center">
-        Magic Explain Tool ✨
+    <div>
+      <h2 className="mb-6 text-xl font-semibold text-foreground">
+        Explain a topic
       </h2>
       
       {/* Level Selection */}
@@ -360,33 +367,15 @@ function MagicExplainInterface() {
 export default function MagicExplainPage() {
   return (
     <LearningToolsProvider questionRef="magic-explain-page" initialText="">
-      <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-purple-400/30 to-purple-100 dark:from-gray-900 dark:to-purple-900 overflow-hidden">
-        {/* Animated Background Shapes */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-purple-400/30 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-[-120px] right-[-120px] w-[350px] h-[350px] bg-purple-600/20 rounded-full blur-2xl animate-pulse" />
-        </div>
-        {/* Hero */}
-        <div className="relative z-10 w-full flex flex-col items-center justify-center py-16 px-4">
-          <div className="bg-white/30 dark:bg-purple-900/60 backdrop-blur-lg rounded-full p-8 shadow-2xl mb-4 border-4 border-purple-300 animate-float">
-            {/* <Lottie animationData={magicAnimation} loop style={{ width: 80, height: 80 }} /> */}
-            <Sparkles className="h-16 w-16 text-purple-700 dark:text-purple-200 drop-shadow-glow animate-bounce" />
-          </div>
-          <h1 className="text-5xl font-extrabold text-purple-900 dark:text-white mb-2 drop-shadow-glow tracking-tight">Magic Explain</h1>
-          <p className="text-xl text-purple-700 dark:text-purple-200 mb-4 text-center max-w-2xl font-semibold">
-            <span className="inline-block animate-wiggle">✨</span> Highlight or paste any text and let AI explain it your way! <br />
-            <span className="italic text-purple-500 dark:text-purple-300">“Confusion? Gone in a sparkle.”</span>
+      <div className="mx-auto w-full max-w-6xl space-y-5">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Magic Explain</h1>
+          <p className="mt-2 text-base text-muted-foreground">
+            Paste any text and get an explanation at the level you need.
           </p>
         </div>
-
-        {/* Magic Explain Tool Interface */}
-        <div className="relative z-10 w-full max-w-4xl mx-auto px-4">
+        <div className="rounded-xl border border-border/60 bg-card p-6 shadow-sm">
           <MagicExplainInterface />
-        </div>
-        {/* Floating Mascot */}
-        <div className="fixed bottom-8 left-8 z-20 hidden md:block animate-float">
-          <span className="text-5xl">🦄</span>
-          <div className="text-xs text-purple-700 dark:text-purple-200 font-bold mt-1">Magic Buddy</div>
         </div>
       </div>
     </LearningToolsProvider>

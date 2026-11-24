@@ -7,7 +7,7 @@ import { Users, Calendar, Star, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 
 export default function TutorDashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isAuthLoading } = useAuth();
   const router = useRouter();
   const [stats, setStats] = useState({
     totalStudents: 0,
@@ -19,6 +19,8 @@ export default function TutorDashboard() {
 
   // Redirect if not authenticated or not a tutor
   useEffect(() => {
+    if (isAuthLoading) return;
+
     if (!isAuthenticated) {
       router.push('/');
       return;
@@ -28,7 +30,7 @@ export default function TutorDashboard() {
       router.push('/');
       return;
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthLoading, isAuthenticated, user, router]);
 
   // Fetch tutor stats
   useEffect(() => {
@@ -71,7 +73,7 @@ export default function TutorDashboard() {
 
 
   // Show loading while checking authentication - moved after all hooks
-  if (!isAuthenticated || !user) {
+  if (isAuthLoading || !isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

@@ -15,11 +15,7 @@ import {
   DollarSign, 
   CheckCircle, 
   ArrowRight, 
-  Play,
-  Pause,
   GraduationCap,
-  Target,
-  Award,
   Heart,
   Zap,
   Shield,
@@ -34,12 +30,12 @@ import {
   Smartphone,
   Monitor,
   BookMarked,
-  Trophy,
   Lightbulb,
   Mic,
+  Volume2,
+  VolumeX,
   Languages,
   Bot,
-  School,
   UserCheck,
   Clock4,
   Phone,
@@ -50,28 +46,60 @@ import {
 import { useAuthPopup } from '@/hooks/useAuthPopup';
 import { useAuth } from '@/contexts/AuthContext';
 import BrainstormBubbles from '@/components/BrainstormBubbles';
+import CourseLevels from '@/components/CourseLevels';
+
+// Only one welcome-page video plays at a time.
+const videoPlayListeners = new Set<(id: number) => void>();
+let nextVideoId = 0;
 
 // Custom Video Component with Controls
 function VideoWithControls({ src, className = "" }: { src: string; className?: string }) {
-  const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const idRef = useRef(0);
+  const mutedRef = useRef(false);
 
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
+  if (idRef.current === 0) {
+    idRef.current = ++nextVideoId;
+  }
+
+  useEffect(() => {
+    const id = idRef.current;
+    const pauseIfAnotherPlays = (playingId: number) => {
+      if (playingId !== id) {
+        videoRef.current?.pause();
       }
-      setIsPlaying(!isPlaying);
-    }
+    };
+    videoPlayListeners.add(pauseIfAnotherPlays);
+    return () => {
+      videoPlayListeners.delete(pauseIfAnotherPlays);
+    };
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        video.muted = mutedRef.current;
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    }, { threshold: 0.5 });
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  const notifyPlaying = () => {
+    videoPlayListeners.forEach((listener) => listener(idRef.current));
   };
 
   const toggleMute = () => {
     if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      mutedRef.current = !isMuted;
+      videoRef.current.muted = mutedRef.current;
+      setIsMuted(mutedRef.current);
     }
   };
 
@@ -79,12 +107,11 @@ function VideoWithControls({ src, className = "" }: { src: string; className?: s
     <div className="relative group">
       <video
         ref={videoRef}
-        autoPlay
+        muted={isMuted}
         loop
         playsInline
         className={className}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+        onPlay={() => notifyPlaying()}
       >
         <source src={src} type="video/mp4" />
         Your browser does not support the video tag.
@@ -96,18 +123,11 @@ function VideoWithControls({ src, className = "" }: { src: string; className?: s
           <Button
             size="sm"
             variant="ghost"
-            onClick={togglePlay}
-            className="text-white hover:text-white hover:bg-white/20"
-          >
-            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
             onClick={toggleMute}
+            aria-label={isMuted ? 'Unmute video' : 'Mute video'}
             className="text-white hover:text-white hover:bg-white/20"
           >
-            {isMuted ? <Mic className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+            {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
           </Button>
         </div>
       </div>
@@ -152,24 +172,6 @@ export default function Home() {
     { name: "Saket", students: 90, tutors: 15, rating: 4.6 },
     { name: "Pitampura", students: 110, tutors: 18, rating: 4.5 },
     { name: "Janakpuri", students: 95, tutors: 16, rating: 4.7 }
-  ]
-
-  const courseCategoryIconClass = [
-    'bg-category-1 text-category-1-fg',
-    'bg-category-2 text-category-2-fg',
-    'bg-category-3 text-category-3-fg',
-    'bg-category-4 text-category-4-fg',
-    'bg-category-5 text-category-5-fg',
-    'bg-category-6 text-category-6-fg',
-  ] as const
-
-  const courseCategories = [
-    { name: "Kindergarten", icon: <School className="h-6 w-6" />, courses: 12 },
-    { name: "Primary (1-5)", icon: <BookOpen className="h-6 w-6" />, courses: 25 },
-    { name: "Middle (6-8)", icon: <GraduationCap className="h-6 w-6" />, courses: 30 },
-    { name: "Secondary (9-10)", icon: <Target className="h-6 w-6" />, courses: 35 },
-    { name: "Senior Secondary", icon: <Trophy className="h-6 w-6" />, courses: 40 },
-    { name: "Competitive Exams", icon: <Award className="h-6 w-6" />, courses: 20 }
   ]
 
   const features = [
@@ -238,30 +240,30 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-br from-primary/[0.07] via-background to-brand-primary-end/[0.06]">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.35)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.35)_1px,transparent_1px)] bg-[size:48px_48px]" />
-          <div className="relative px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
+          <div className="relative px-6 py-10 sm:px-6 sm:py-14 lg:px-8">
             <div className="mx-auto max-w-7xl">
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="grid items-center gap-8 lg:grid-cols-2">
                 {/* Content Side */}
                 <div className="text-center lg:text-left">
-                  <div className="flex items-center justify-center lg:justify-start mb-6">
+                  <div className="mb-3 flex items-center justify-center lg:justify-start">
                     <Badge variant="secondary" className="px-4 py-2 text-sm font-medium">
                       <Sparkles className="h-4 w-4 mr-2" />
                       #1 AI-Powered Learning Platform
                     </Badge>
                   </div>
                   
-                  <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-5xl xl:text-6xl">
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
                     Smart Teaching. Smarter Students
                     <br />
                     <span className="gradient-text">Fueling Futures with AI</span>
                   </h1>
                   
-                  <p className="mt-6 text-lg leading-8 text-muted-foreground lg:max-w-lg">
+                  <p className="mt-3 text-base leading-6 text-muted-foreground lg:max-w-lg">
                     Experience personalized learning with AI assistance. Choose from online classes or offline sessions 
                     across Delhi. Expert tutors, smart recommendations, and voice support in Indian languages.
                   </p>
                   
-                  <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 flex-wrap">
+                  <div className="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 flex-wrap">
                     <Button
                       size="lg"
                       className="px-8 py-3 text-lg shadow-md bg-gradient-to-r from-primary to-brand-primary-end hover:opacity-95"
@@ -350,39 +352,42 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Course Categories Section */}
-        <section className="py-24 px-6 sm:px-6 lg:px-8 bg-muted/30">
-          <div className="mx-auto max-w-7xl">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Courses for Every Level
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                From Kindergarten to Competitive Exams - We've got you covered
-              </p>
+        <section className="px-6 pb-8 sm:px-6 lg:px-8 bg-muted/25">
+          <div className="mx-auto max-w-3xl">
+            <div className="relative">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                <VideoWithControls
+                  src="/video/footer-video.mp4"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <Brain className="w-8 h-8 text-primary" />
+              </div>
+              <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-secondary" />
+              </div>
             </div>
-            
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {courseCategories.map((category, index) => (
-                <Link key={index} href="/courses" className="block">
-                  <Card className="group border border-border/60 bg-card shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
-                    <CardContent className="p-6">
-                      <div className="flex items-center space-x-4">
-                        <div
-                          className={`w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300 ${courseCategoryIconClass[index]}`}
-                        >
-                          {category.icon}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-lg">{category.name}</h3>
-                          <p className="text-sm text-muted-foreground">{category.courses} courses available</p>
-                        </div>
-                        <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+          </div>
+        </section>
+
+        <CourseLevels />
+
+        <section className="px-6 py-8 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl">
+            <div className="relative">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                <VideoWithControls
+                  src="/video/footer-video2.mp4"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <Brain className="w-8 h-8 text-primary" />
+              </div>
+              <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
+                <GraduationCap className="w-6 h-6 text-secondary" />
+              </div>
             </div>
           </div>
         </section>
@@ -597,8 +602,7 @@ export default function Home() {
         {/* Footer Section with Video */}
         <footer className="bg-muted/30 py-16 px-6 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Footer Content */}
+            <div>
               <div className="text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start mb-6">
                   <Badge variant="secondary" className="px-4 py-2 text-sm font-medium">
@@ -649,45 +653,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
-              {/* Footer Videos */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* First Footer Video */}
-                <div className="relative">
-                  <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                    <VideoWithControls 
-                      src="/video/footer-video.mp4"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  {/* Floating elements around first footer video */}
-                  <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Brain className="w-8 h-8 text-primary" />
-                  </div>
-                  <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
-                    <GraduationCap className="w-6 h-6 text-secondary" />
-                  </div>
-                </div>
-
-                {/* Second Footer Video */}
-                <div className="relative">
-                  <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                    <VideoWithControls 
-                      src="/video/footer-video2.mp4"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  {/* Floating elements around second footer video */}
-                  <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Brain className="w-8 h-8 text-primary" />
-                  </div>
-                  <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
-                    <GraduationCap className="w-6 h-6 text-secondary" />
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Footer Links */}
@@ -700,6 +665,7 @@ export default function Home() {
                     <li><Link href="/tutors" className="hover:text-foreground transition-colors">Find Tutors</Link></li>
                     <li><Link href="/subjects" className="hover:text-foreground transition-colors">Subjects</Link></li>
                     <li><Link href="/ai-teaching" className="hover:text-foreground transition-colors">AI Assistant</Link></li>
+                    <li><Link href="/jee" className="hover:text-foreground transition-colors">JEE Syllabus</Link></li>
                   </ul>
                 </div>
                 <div>

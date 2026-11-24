@@ -88,7 +88,7 @@ export default function ClassPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
@@ -104,7 +104,7 @@ export default function ClassPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -112,7 +112,7 @@ export default function ClassPage() {
             <Link href="/ncert">
               <Button variant="ghost" size="sm" className="mr-4">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to AI Hub
+                Back to My Learning
               </Button>
             </Link>
           </div>
@@ -120,7 +120,7 @@ export default function ClassPage() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <Brain className="h-8 w-8 text-purple-500 mr-3" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
                 Class {getClassDisplayName(className)} AI Learning
               </h1>
               <Sparkles className="h-6 w-6 text-cyan-500 ml-3 animate-pulse" />

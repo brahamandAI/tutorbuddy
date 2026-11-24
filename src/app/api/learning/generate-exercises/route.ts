@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-})
+import { createOpenAI } from '@/lib/openaiKey'
 
 interface GenerateExercisesRequest {
   summary: string
@@ -71,6 +67,11 @@ Important:
 ${summary}
 
 Generate matching pairs and fill-in-the-blank questions that test understanding of this content.`
+
+    const openai = await createOpenAI()
+    if (!openai) {
+      return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 503 })
+    }
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4",

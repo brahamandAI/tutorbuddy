@@ -624,35 +624,18 @@ function MicroQuizInterface() {
 
 export default function MicroQuizPage() {
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-gradient-to-br from-pink-900 via-pink-400/30 to-pink-100 dark:from-gray-900 dark:to-pink-900 overflow-hidden">
-      {/* Animated Background Shapes */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-pink-400/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-[-120px] right-[-120px] w-[350px] h-[350px] bg-pink-600/20 rounded-full blur-2xl animate-pulse" />
-      </div>
-      
-      {/* Hero */}
-      <div className="relative z-10 w-full flex flex-col items-center justify-center py-16 px-4">
-        <div className="bg-white/30 dark:bg-pink-900/60 backdrop-blur-lg rounded-full p-8 shadow-2xl mb-4 border-4 border-pink-300 animate-float">
-          <Star className="h-16 w-16 text-pink-700 dark:text-pink-200 drop-shadow-glow animate-bounce" />
+    <LearningToolsProvider questionRef="micro-quiz-page" initialText="">
+      <div className="mx-auto w-full max-w-6xl space-y-5">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Micro Quiz</h1>
+          <p className="mt-2 max-w-2xl text-base text-muted-foreground">
+            Build a short quiz from a subject or from notes you upload.
+          </p>
         </div>
-        <h1 className="text-5xl font-extrabold text-pink-900 dark:text-white mb-6 drop-shadow-glow tracking-tight">Micro Quiz Generator</h1>
-        <p className="text-xl text-pink-700 dark:text-pink-200 mb-8 text-center max-w-2xl font-semibold">
-          <span className="inline-block animate-wiggle">⭐</span> Create interactive quizzes from documents or subjects! <br />
-          <span className="italic text-pink-500 dark:text-pink-300">"Quiz yourself, level up fast!"</span>
-        </p>
+        <div className="rounded-xl border border-border/60 bg-card p-6 shadow-sm">
+          <MicroQuizInterface />
+        </div>
       </div>
-
-      {/* Micro Quiz Interface */}
-      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 mb-8">
-        <MicroQuizInterface />
-      </div>
-
-      {/* Floating Mascot */}
-      <div className="fixed bottom-8 left-8 z-20 hidden md:block animate-float">
-        <span className="text-5xl">🎯</span>
-        <div className="text-xs text-pink-700 dark:text-pink-200 font-bold mt-1">Quiz Master</div>
-      </div>
-    </div>
+    </LearningToolsProvider>
   );
 } 

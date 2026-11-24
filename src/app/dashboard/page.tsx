@@ -8,10 +8,12 @@ import { Button } from '@/components/ui/Button';
 import { User, GraduationCap, BookOpen, Target } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isAuthLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (isAuthLoading) return;
+
     if (!isAuthenticated) {
       router.push('/');
       return;
@@ -23,9 +25,9 @@ export default function Dashboard() {
     } else if (user?.role === 'TUTOR') {
       router.push('/tutor/dashboard');
     }
-  }, [user, isAuthenticated, router]);
+  }, [user, isAuthenticated, isAuthLoading, router]);
 
-  if (!isAuthenticated) {
+  if (isAuthLoading || !isAuthenticated) {
     return null; // Will redirect to home
   }
 

@@ -8,11 +8,13 @@ interface User {
   name: string;
   email: string;
   role: string;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isAuthLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, role: string) => Promise<void>;
   loginWithGoogle: (accessToken: string, role: string) => Promise<void>;
@@ -24,6 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -46,6 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error('Auth validation error:', error);
         setUser(null);
         setIsAuthenticated(false);
+      } finally {
+        setIsAuthLoading(false);
       }
     };
 
@@ -72,12 +77,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       setUser(data.user);
       setIsAuthenticated(true);
-      if (data.user.role === 'STUDENT') {
+      if (data.user.isAdmin || data.user.role === 'ADMIN') {
+        router.push('/admin/openai');
+      } else if (data.user.role === 'STUDENT') {
         router.push('/student/dashboard');
       } else if (data.user.role === 'TUTOR') {
         router.push('/tutor/dashboard');
       } else {
-        router.push('/dashboard'); // fallback
+        router.push('/dashboard');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -165,7 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, register, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isAuthLoading, login, register, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );

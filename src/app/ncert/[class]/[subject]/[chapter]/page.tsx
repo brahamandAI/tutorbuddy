@@ -79,6 +79,24 @@ export default function ChapterPage() {
     loadChapter()
   }, [loadChapter])
 
+  useEffect(() => {
+    if (!chapter) return
+    const subjectNames: Record<string, string> = {
+      english: 'English',
+      hindi: 'Hindi',
+      maths: 'Mathematics',
+      math: 'Mathematics',
+      science: 'Science',
+      social: 'Social Studies',
+    }
+    localStorage.setItem('tb-continue', JSON.stringify({
+      title: chapter.title,
+      href: `/ncert/${className}/${subjectId}/${chapterNumber}`,
+      subject: subjectNames[subjectId] || subjectId,
+      className,
+    }))
+  }, [chapter, className, subjectId, chapterNumber])
+
   const getSubjectDisplayName = (subjectId: string) => {
     const subjectNames: Record<string, string> = {
       'english': 'English',
@@ -148,7 +166,7 @@ export default function ChapterPage() {
               <Link href="/ncert">
                 <Button>
                   <Home className="h-4 w-4 mr-2" />
-                  AI Tutor Hub
+                  AI Tutor
                 </Button>
               </Link>
             </div>

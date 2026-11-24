@@ -3,332 +3,214 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { 
-  BookOpen, 
-  User, 
-  GraduationCap, 
-  Brain, 
-  MapPin, 
-  MessageSquare,
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import {
+  User,
+  GraduationCap,
   Menu,
-  X,
-  Home,
-  Users,
-  Target,
-  Settings,
   LogOut,
-  Video, // Add Video icon for online teaching
-  Sparkles,
-  Star,
-  Zap,
-  Camera,
-  Shield,
-  Presentation
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 import { useAuthPopup } from '@/hooks/useAuthPopup'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePathname } from 'next/navigation'
 import { useSidebar } from '@/contexts/SidebarContext'
 import { UserNav } from '@/components/user-nav'
+import { globalNav, isNavActive } from '@/components/nav-config'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { openPopup } = useAuthPopup()
   const { user, isAuthenticated, logout } = useAuth()
   const pathname = usePathname()
-  const { toggleSidebar, isCollapsed } = useSidebar()
-  
-  // Check if user is on authenticated pages (student/tutor dashboard pages)
-  const isOnAuthenticatedPage = pathname?.startsWith('/student/') || pathname?.startsWith('/tutor/')
+  const { toggleSidebar } = useSidebar()
 
-  const mainNavigation = [
-    { name: 'Home', href: '/', icon: <Home className="h-4 w-4" /> },
-    { name: 'Courses', href: '/courses', icon: <BookOpen className="h-4 w-4" /> },
-    { name: 'AI Teaching', href: '/ai-teaching', icon: <Brain className="h-4 w-4" /> }
-  ]
+  const links = globalNav(user?.role)
 
-  const toolsNavigation = [
-    { name: 'All Learning Tools', href: '/learning-tools', icon: <Target className="h-4 w-4" /> },
-    { name: 'Magic Explain', href: '/magic-explain', icon: <Sparkles className="h-4 w-4" /> },
-    { name: 'Micro Quiz', href: '/micro-quiz', icon: <Star className="h-4 w-4" /> },
-    { name: 'Doubt Battle', href: '/doubt-battle', icon: <Zap className="h-4 w-4" /> },
-    { name: 'Snap & Solve', href: '/snap-solve', icon: <Camera className="h-4 w-4" /> },
-    { name: 'Whiteboard', href: '/whiteboard', icon: <Presentation className="h-4 w-4" /> }
-  ]
-
-  const otherNavigation = [
-    { name: 'Offline Meet', href: '/offline-meet', icon: <MapPin className="h-4 w-4" /> },
-    { name: 'Online Teaching', href: '/study-groups', icon: <Video className="h-4 w-4" /> } // Add Online Teaching link
-  ]
-
-
+  const openIfNeeded = (event: MouseEvent, requiresAuth?: boolean) => {
+    if (requiresAuth && !isAuthenticated) {
+      event.preventDefault()
+      openPopup('login')
+    }
+  }
 
   return (
-    <nav className="border-b border-border/80 bg-card/80 backdrop-blur-md supports-[backdrop-filter]:bg-card/70 fixed top-0 left-0 right-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-            {/* Sidebar Toggle Button - Edge of Screen */}
+    <nav className="border-b border-border/80 bg-card/80 backdrop-blur-md supports-[backdrop-filter]:bg-card/70 fixed top-0 left-0 right-0 z-50">
+      <div className="relative flex h-16 items-center px-3 sm:px-4">
+        <div className="flex items-center gap-3">
+          {isAuthenticated && (
             <button
               onClick={toggleSidebar}
-              className="fixed top-4 left-4 z-50 p-3 rounded-xl border border-border bg-card/95 shadow-md backdrop-blur-sm transition-all duration-200 hover:bg-card hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Toggle sidebar"
               title="Toggle sidebar"
             >
-              <div className="flex flex-col space-y-1">
-                <div className={`w-5 h-0.5 bg-foreground transition-all duration-200 ${!isCollapsed ? 'rotate-45 translate-y-1.5' : ''}`}></div>
-                <div className={`w-5 h-0.5 bg-foreground transition-all duration-200 ${!isCollapsed ? 'opacity-0' : ''}`}></div>
-                <div className={`w-5 h-0.5 bg-foreground transition-all duration-200 ${!isCollapsed ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
-              </div>
+              <Menu className="h-5 w-5" />
             </button>
-
-            {/* Logo - Center */}
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <Image 
-                src="/images/logo.jpeg" 
-                alt="TutorBuddy Logo" 
-                width={64}
-                height={64}
-                className="h-16 w-auto rounded-lg"
-              />
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-brand-primary-end bg-clip-text text-transparent">
-                TutorBuddy
-              </span>
-            </Link>
-          </div>
-
-          {/* Desktop Navigation — hidden on student/tutor app routes (sidebar is primary) */}
-          {!isOnAuthenticatedPage && (
-            <div className="hidden lg:flex items-center space-x-6">
-              <div className="flex items-center space-x-6">
-                {mainNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </Link>
-                ))}
-              </div>
-
-              <div className="relative group">
-                <button className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  <Target className="h-4 w-4" />
-                  <span>Tools</span>
-                  <svg className="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <div className="absolute top-full left-0 mt-2 w-64 rounded-lg border border-border bg-popover text-popover-foreground shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="py-2 max-h-96 overflow-y-auto">
-                    {toolsNavigation.map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className="flex items-center space-x-3 px-4 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      >
-                        {item.icon}
-                        <span>{item.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-6">
-                {otherNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
           )}
-          {isOnAuthenticatedPage && <div className="hidden lg:block flex-1" aria-hidden />}
 
-          {/* Desktop Auth Buttons */}
-          <div className="hidden lg:flex items-center space-x-4">
-            {!isAuthenticated ? (
+          <Link href="/" className="flex shrink-0 items-center gap-2 hover:opacity-80 transition-opacity">
+            <Image
+              src="/images/logo.jpeg"
+              alt="TutorBuddy Logo"
+              width={36}
+              height={36}
+              className="h-9 w-9 rounded-lg object-cover"
+            />
+            <span className="font-bold text-lg bg-gradient-to-r from-primary to-brand-primary-end bg-clip-text text-transparent">
+              TutorBuddy
+            </span>
+          </Link>
+        </div>
+
+        {isAuthenticated && (
+        <div className="pointer-events-none absolute inset-0 hidden items-center justify-center lg:flex">
+          <div className="pointer-events-auto flex items-center gap-1">
+            {links.map((item) => {
+              const active = isNavActive(pathname, item)
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={(event) => openIfNeeded(event, item.requiresAuth)}
+                  className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                    active
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+        )}
+
+        <div className="ml-auto hidden lg:flex items-center">
+          {!isAuthenticated ? (
             <div className="flex space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => openPopup('register')}
                 className="hover:bg-primary/10"
               >
                 <User className="mr-2 h-4 w-4" />
                 Sign Up
               </Button>
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 onClick={() => openPopup('login')}
-                className="bg-gradient-to-r from-primary to-brand-primary-end hover:opacity-95 shadow-sm"
+                className="bg-gradient-to-r from-primary to-brand-primary-end hover:opacity-95"
               >
                 <GraduationCap className="mr-2 h-4 w-4" />
                 Sign In
               </Button>
             </div>
-            ) : (
-              <UserNav user={user} />
-            )}
-          </div>
-
-          {/* Mobile: app routes use sidebar + account menu; marketing sites keep full menu */}
-          <div className="lg:hidden flex items-center">
-            {isAuthenticated && user && isOnAuthenticatedPage ? (
-              <UserNav user={user} />
-            ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            )}
-          </div>
+          ) : (
+            <UserNav user={user} />
+          )}
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && !isOnAuthenticatedPage && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 border-t">
-              {/* Main Navigation */}
-              <div className="space-y-1">
-                <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Main
-                </h3>
-                {mainNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </Link>
-                ))}
-              </div>
+        <div className="ml-auto lg:hidden flex items-center gap-1">
+          {isAuthenticated && user ? <UserNav user={user} /> : (
+            <Button size="sm" onClick={() => openPopup('login')}>
+              Sign In
+            </Button>
+          )}
+          {isAuthenticated && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
+      </div>
 
-              {/* Tools Navigation */}
-              <div className="space-y-1 pt-4 border-t">
-                <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Learning Tools
-                </h3>
-                {toolsNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </Link>
-                ))}
-              </div>
+      {isAuthenticated && isMenuOpen && (
+        <div className="lg:hidden border-t border-border bg-card px-3 py-3">
+          <div className="space-y-1">
+            {links.map((item) => {
+              const active = isNavActive(pathname, item)
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={(event) => {
+                    openIfNeeded(event, item.requiresAuth)
+                    setIsMenuOpen(false)
+                  }}
+                  className={`flex items-center rounded-xl px-3 py-2 text-sm font-medium ${
+                    active
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
+          </div>
 
-              {/* Other Navigation */}
-              <div className="space-y-1 pt-4 border-t">
-                <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Other
-                </h3>
-                {otherNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Auth Links */}
-              <div className="space-y-1 pt-4 border-t">
-                {!isAuthenticated ? (
-                  <>
-                <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Get Started
-                </h3>
+          <div className="mt-3 space-y-1 border-t border-border pt-3">
+            {!isAuthenticated ? (
+              <>
                 <button
                   onClick={() => {
-                    openPopup('register');
-                    setIsMenuOpen(false);
+                    openPopup('register')
+                    setIsMenuOpen(false)
                   }}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors w-full text-left"
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <User className="h-4 w-4" />
-                  <span>Sign Up</span>
+                  Sign Up
                 </button>
                 <button
                   onClick={() => {
-                    openPopup('login');
-                    setIsMenuOpen(false);
+                    openPopup('login')
+                    setIsMenuOpen(false)
                   }}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors w-full text-left"
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <GraduationCap className="h-4 w-4" />
-                  <span>Sign In</span>
+                  Sign In
                 </button>
-                  </>
-                ) : (
-                  <>
-                <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Account
-                </h3>
-                <div className="flex items-center space-x-2 px-3 py-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback>{user?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}</AvatarFallback>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>
+                      {user?.name?.split(' ').map((part: string) => part[0]).join('').toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">{user?.name}</span>
-                    <span className="text-xs text-muted-foreground">{user?.email}</span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{user?.name}</p>
+                    <p className="truncate text-xs text-muted-foreground capitalize">
+                      {user?.role?.toLowerCase()}
+                    </p>
                   </div>
                 </div>
                 <button
                   onClick={() => {
-                    // Navigate to profile page based on role
-                    const profilePath = user?.role === 'TUTOR' ? '/tutor/profile' : '/student/profile';
-                    window.location.href = profilePath;
-                    setIsMenuOpen(false);
+                    logout()
+                    setIsMenuOpen(false)
                   }}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors w-full text-left"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Profile</span>
-                </button>
-                <button
-                  onClick={() => {
-                    logout();
-                    setIsMenuOpen(false);
-                  }}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors w-full text-left"
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <LogOut className="h-4 w-4" />
-                  <span>Log out</span>
+                  Log out
                 </button>
-                  </>
-                )}
-              </div>
-
-                            {/* Theme Toggle removed - available in sidebar */}
-            </div>
+              </>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   )
-} 
+}

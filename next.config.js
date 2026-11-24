@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    esmExternals: 'loose',
-  },
   // Security headers (malware/miner hardening, Hostinger-friendly)
   async headers() {
     return [
@@ -10,7 +7,7 @@ const nextConfig = {
         source: '/:path*',
         headers: [
           { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'X-XSS-Protection', value: '1; mode=block' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
@@ -39,10 +36,6 @@ const nextConfig = {
     
     return config;
   },
-  // Production settings
-  // Standalone mode: Creates a minimal server with all dependencies
-  // Note: Run "npm run build" to automatically copy static files via postbuild script
-  output: 'standalone',
   poweredByHeader: false,
   compress: true,
   generateEtags: false,

@@ -25,6 +25,17 @@ export function generateToken(user: User): string {
   return token;
 }
 
+export function setAuthCookie(response: NextResponse, token: string) {
+  response.cookies.set('token', token, {
+    httpOnly: true,
+    path: '/',
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 60 * 60 * 24,
+  });
+  return response;
+}
+
 export function verifyToken(token: string): any {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');

@@ -28,7 +28,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Message or image is required' }, { status: 400 });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const { getOpenAIKey } = await import('@/lib/openaiKey');
+    const apiKey = await getOpenAIKey();
     if (!apiKey) {
       return NextResponse.json({ error: 'Server misconfigured: OPENAI_API_KEY missing' }, { status: 500 });
     }

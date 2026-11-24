@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
-
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
+import { createOpenAI, getOpenAIKey } from '@/lib/openaiKey'
 
 async function extractTextFromPDF(pdfUrl: string, pageNumber: number): Promise<string> {
   try {
@@ -67,6 +62,8 @@ ${combinedText}
 
 Please provide a comprehensive summary:`
 
+    const openai = await createOpenAI()
+    if (!openai) return 'OpenAI API key not configured'
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -102,7 +99,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!(await getOpenAIKey())) {
       return NextResponse.json(
         { error: 'OpenAI API key not configured' },
         { status: 500 }

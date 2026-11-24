@@ -5,7 +5,7 @@ import {
   DollarSign, 
   Globe, 
   BookOpen, 
-  MapPin,
+  Landmark,
   X,
   FileText,
   Eye,
@@ -38,9 +38,9 @@ const categories: Category[] = [
     gradient: 'from-success to-success/85',
     iconForegroundClass: 'text-success-foreground',
     pdfs: [
-      { name: 'economy part1.pdf', path: '/footer/pdfs/economy/economy part1.pdf', displayName: 'Economy Part 1' },
-      { name: 'economy part2.pdf', path: '/footer/pdfs/economy/economy part2.pdf', displayName: 'Economy Part 2' },
-      { name: 'economy part3.pdf', path: '/footer/pdfs/economy/economy part3.pdf', displayName: 'Economy Part 3' },
+      { name: 'economy-part1.pdf', path: '/footer/pdfs/economy/economy-part1.pdf', displayName: 'Economy Part 1' },
+      { name: 'economy-part2.pdf', path: '/footer/pdfs/economy/economy-part2.pdf', displayName: 'Economy Part 2' },
+      { name: 'economy-part3.pdf', path: '/footer/pdfs/economy/economy-part3.pdf', displayName: 'Economy Part 3' },
     ]
   },
   {
@@ -50,10 +50,10 @@ const categories: Category[] = [
     gradient: 'from-primary to-brand-primary-end',
     iconForegroundClass: 'text-primary-foreground',
     pdfs: [
-      { name: 'PART-3-indian-geography.pdf', path: '/footer/pdfs/geo/PART-3-indian-geography.pdf', displayName: 'Indian Geography Part 3' },
-      { name: 'part1-Indian-geography .pdf', path: '/footer/pdfs/geo/part1-Indian-geography .pdf', displayName: 'Indian Geography Part 1' },
+      { name: 'part1-indian-geography.pdf', path: '/footer/pdfs/geo/part1-indian-geography.pdf', displayName: 'Indian Geography Part 1' },
       { name: 'part2-indian-geography.pdf', path: '/footer/pdfs/geo/part2-indian-geography.pdf', displayName: 'Indian Geography Part 2' },
-      { name: 'Physical-geography.pdf', path: '/footer/pdfs/geo/Physical-geography.pdf', displayName: 'Physical Geography' },
+      { name: 'part3-indian-geography.pdf', path: '/footer/pdfs/geo/part3-indian-geography.pdf', displayName: 'Indian Geography Part 3' },
+      { name: 'physical-geography.pdf', path: '/footer/pdfs/geo/physical-geography.pdf', displayName: 'Physical Geography' },
     ]
   },
   {
@@ -63,22 +63,19 @@ const categories: Category[] = [
     gradient: 'from-brand-primary-end to-primary',
     iconForegroundClass: 'text-primary-foreground',
     pdfs: [
-      { name: 'PART-1-modern-Indian-history.pdf', path: '/footer/pdfs/history/PART-1-modern-Indian-history.pdf', displayName: 'Modern Indian History Part 1' },
-      { name: 'part-2-modern-indian-history.pdf', path: '/footer/pdfs/history/part-2-modern-indian-history.pdf', displayName: 'Modern Indian History Part 2' },
-      { name: 'Part-3-modern-indian-history.pdf', path: '/footer/pdfs/history/Part-3-modern-indian-history.pdf', displayName: 'Modern Indian History Part 3' },
+      { name: 'part1-modern-indian-history.pdf', path: '/footer/pdfs/history/part1-modern-indian-history.pdf', displayName: 'Modern Indian History Part 1' },
+      { name: 'part2-modern-indian-history.pdf', path: '/footer/pdfs/history/part2-modern-indian-history.pdf', displayName: 'Modern Indian History Part 2' },
+      { name: 'part3-modern-indian-history.pdf', path: '/footer/pdfs/history/part3-modern-indian-history.pdf', displayName: 'Modern Indian History Part 3' },
     ]
   },
   {
-    id: 'maps',
-    name: 'Maps',
-    icon: <MapPin className="h-8 w-8" />,
+    id: 'polity',
+    name: 'Polity',
+    icon: <Landmark className="h-8 w-8" />,
     gradient: 'from-warning to-warning/80',
     iconForegroundClass: 'text-warning-foreground',
     pdfs: [
-      { name: 'Africa.pdf', path: '/footer/pdfs/maps/Africa.pdf', displayName: 'Africa Map' },
-      { name: 'Asia.pdf', path: '/footer/pdfs/maps/Asia.pdf', displayName: 'Asia Map' },
-      { name: 'Europe.pdf', path: '/footer/pdfs/maps/Europe.pdf', displayName: 'Europe Map' },
-      { name: 'South-America.pdf', path: '/footer/pdfs/maps/South-America.pdf', displayName: 'South America Map' },
+      { name: 'indian-polity.pdf', path: '/footer/pdfs/polity/indian-polity.pdf', displayName: 'Indian Polity' },
     ]
   }
 ]
